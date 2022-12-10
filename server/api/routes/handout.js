@@ -1,9 +1,7 @@
-/*const express = require("express");
-const app = express();
-const cors = require("cors");
-const pool = require("./db");
+const {Router} = require('express');
 
-app.post("/package", async (req, res) => {
+const router = Router();
+router.post("/handout", async (req, res) => {
     try {
       const {pack_type, 
         test_title, 
@@ -25,7 +23,7 @@ app.post("/package", async (req, res) => {
     }
   });
 
-  app.get("/package", async (req, res) => {
+  router.get("/package", async (req, res) => {
     try {
       const allPackages = await pool.query("SELECT * FROM package");
       res.json(allPackages.rows);
@@ -34,7 +32,7 @@ app.post("/package", async (req, res) => {
     }
   });
 
-  app.get("/package/:id", async (req, res) => {
+  router.get("/package/:id", async (req, res) => {
     try {
       const { id } = req.params;
       const package = await pool.query("SELECT * FROM package WHERE pack_id = $1", [
@@ -47,7 +45,7 @@ app.post("/package", async (req, res) => {
     }
   });
   
-  app.put("/packages/:id", async (req, res) => {
+  router.put("/packages/:id", async (req, res) => {
     try {
       const { id } = req.params;
       const {pack_type, 
@@ -70,7 +68,7 @@ app.post("/package", async (req, res) => {
     }
   });
 
-  app.delete("/package/:id", async (req, res) => {
+  router.delete("/package/:id", async (req, res) => {
     try {
       const { id } = req.params;
       const deletePackage = await pool.query("DELETE FROM package WHERE todo_id = $1", [
@@ -82,11 +80,11 @@ app.post("/package", async (req, res) => {
     }
   });
   
-  app.listen(5000, () => {
+  router.listen(5000, () => {
       console.log("server has started on port 5000");
   });
-*/
 
+module.exports = router;
 
 
 
