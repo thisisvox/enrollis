@@ -4,7 +4,7 @@ const router = Router();
 router.post("/handout", async (req, res) => {
     try {
       const {pack_type, 
-        test_title, 
+        doc_link, 
         pack_price, 
         pack_n_session, 
         pack_sdate, 
