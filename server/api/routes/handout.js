@@ -9,7 +9,7 @@ router.post("/handout", async (req, res) => {
         pack_n_session, 
         pack_sdate, 
         pack_edate,   
-        pack_days, 
+        pack_days,  
         pack_stime, 
         pack_etime } = req.body;
       const newPackage = await pool.query(

@@ -1,8 +1,9 @@
-const { Router } = require('express');
+/*const express = require("express");
+const app = express();
+const cors = require("cors");
+const pool = require("./db");
 
-const router = Router();
-
-router.post("/package", async (req, res) => {
+app.post("/package", async (req, res) => {
     try {
       const {pack_type, 
         test_title, 
@@ -24,7 +25,7 @@ router.post("/package", async (req, res) => {
     }
   });
 
-  router.get("/package", async (req, res) => {
+  app.get("/package", async (req, res) => {
     try {
       const allPackages = await pool.query("SELECT * FROM package");
       res.json(allPackages.rows);
@@ -33,11 +34,11 @@ router.post("/package", async (req, res) => {
     }
   });
 
-  router.get("/package/:id", async (req, res) => {
+  app.get("/package/:id", async (req, res) => {
     try {
-      const { pack_id } = req.params;
+      const { id } = req.params;
       const package = await pool.query("SELECT * FROM package WHERE pack_id = $1", [
-        pack_id
+        id
       ]);
   
       res.json(package.rows[0]);
@@ -46,9 +47,9 @@ router.post("/package", async (req, res) => {
     }
   });
   
-  router.put("/package/:id", async (req, res) => {
+  app.put("/packages/:id", async (req, res) => {
     try {
-      const { pack_id } = req.params;
+      const { id } = req.params;
       const {pack_type, 
         test_title, 
         pack_price, 
@@ -59,8 +60,8 @@ router.post("/package", async (req, res) => {
         pack_stime, 
         pack_etime} = req.body;
       const updateTodo = await pool.query(
-        "UPDATE package SET pack_type = $1, test_title = $2, pack_price = $3, pack_n_session = $4, pack_sdate = $5, pack_edate = $6, pack_days = $7, pack_stime = $8, pack_etime = $9 WHERE pack_id = $2",
-        [pack_type, test_title, pack_price, pack_n_session, pack_sdate,pack_edate, pack_days, pack_stime, pack_etime , pack_id]
+        "UPDATE package SET pack_type = $1, test_title = $2, pack_price = $3, pack_n_session = $4, pack_sdate = $5, pack_edate = $6, pack_days = $7, pack_stime = $8, pack_etime = $9 WHERE todo_id = $2",
+        [description, id]
       );
   
       res.json("Package was updated!");
@@ -69,11 +70,11 @@ router.post("/package", async (req, res) => {
     }
   });
 
-  router.delete("/package/:id", async (req, res) => {
+  app.delete("/package/:id", async (req, res) => {
     try {
-      const { pack_id } = req.params;
-      const deletePackage = await pool.query("DELETE FROM package WHERE pack_id = $1", [
-        pack_id
+      const { id } = req.params;
+      const deletePackage = await pool.query("DELETE FROM package WHERE todo_id = $1", [
+        id
       ]);
       res.json("Package was deleted!");
     } catch (err) {
@@ -81,8 +82,10 @@ router.post("/package", async (req, res) => {
     }
   });
   
-  module.exports = router;
-
+  app.listen(5000, () => {
+      console.log("server has started on port 5000");
+  });
+*/
 
 
 
