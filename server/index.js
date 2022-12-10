@@ -11,7 +11,7 @@ app.use(express.urlencoded({ extended: true }));
 
 //routes
 //create session -post: adding 
-app.post ("/session", async(req,res)=>{
+app.post ("/sessiono", async(req,res)=>{
     try {
         const {
             pack_id, 
