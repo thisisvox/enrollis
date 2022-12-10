@@ -39,7 +39,7 @@ router.get("/enroll/:id", async(req,res)=>{
     }
 })
 
-router.put("/enroll/:id", async(req,res)=> {
+router.put("/enroll/:id/:id2/:id3", async(req,res)=> {
     try {
       const {user_type, user_id, pack_id} = req.params;
       const {enroll_date} = req.body;
@@ -50,7 +50,7 @@ router.put("/enroll/:id", async(req,res)=> {
     }
 })
 
-router.delete("/enroll/:id", async(req,res)=>{
+router.delete("/enroll/:id/:id2/:id3", async(req,res)=>{
     try {
        const{user_type, user_id, pack_id} = req.params;
        const deleteEnroll = await pool.query("DELETE FROM enroll WHERE user_type = $1 AND user_id = $2 AND pack_id = $3", [user_type, user_id, pack_id]);
