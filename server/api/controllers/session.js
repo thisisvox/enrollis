@@ -1,15 +1,11 @@
-/*const express = require("express");
-const app = express();
-const cors = require("cors");
-const pool = require("./db");
+const { Router } = require('express');
 
-//middleware
-app.use(cors());
-app.use(express.json());
+const router = Router();
+
 
 //routes
 //create session -post: adding 
-app.post ("/session", async(req,res)=>{
+router.post ("/session", async(req,res)=>{
     try {
         const {
             pack_id, 
@@ -26,7 +22,7 @@ app.post ("/session", async(req,res)=>{
     }
 })
 // get all sessions
-app.get("/todos", async(req,res)=>{
+router.get("/session", async(req,res)=>{
     try {
       const allSessions = await pool.query("SELECT * FROM session");
       res.json(allSessions.rows);
@@ -36,7 +32,7 @@ app.get("/todos", async(req,res)=>{
 })
 
 // get a session
-app.get("/session/:id", async(req,res)=>{
+router.get("/session/:id", async(req,res)=>{
     try {
         const {sess_id} = req.params;
         const session = await pool.query("SELECT* FROM session WHERE sess_id = $1", [sess_id]);
@@ -46,7 +42,7 @@ app.get("/session/:id", async(req,res)=>{
     }
 })
 //update a session
-app.put("/session/:id", async(req,res)=> {
+router.put("/session/:id", async(req,res)=> {
     try {
       const {sess_id} = req.params;
       const {sess_description, sess_date, sess_link, duration, user_id} = req.body;
@@ -57,7 +53,7 @@ app.put("/session/:id", async(req,res)=> {
     }
 })
 // delete a session
-app.delete("/session/:id", async(req,res)=>{
+router.delete("/session/:id", async(req,res)=>{
     try {
        const{sess_id} = req.params;
        const deleteTodo = await pool.query("DELETE FROM session WHERE sess_id= $1", [sess_id]);
@@ -67,6 +63,4 @@ app.delete("/session/:id", async(req,res)=>{
     }
 })
     
-app.listen(5000,()=> {
-    console.log("server has started on port 5000"); 
-});*/
+module.exports = router;
