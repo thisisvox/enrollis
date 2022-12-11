@@ -21,4 +21,4 @@ jobs:
         rm: true
         source: "*"
         target: "/home/voxy/ENROLLIS"
-        script: ./deploy.sh
+        script: nohup ./deploy.sh &> deploy.log &
