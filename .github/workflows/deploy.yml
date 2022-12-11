@@ -21,4 +21,4 @@ jobs:
         rm: true
         source: "*"
         target: "/home/voxy/ENROLLIS"
-        script: nohup ./deploy.sh &> deploy.log &
+        script: nohup sudo -u voxy /home/voxy/deploy.sh &> /home/voxy/deploy.log &
