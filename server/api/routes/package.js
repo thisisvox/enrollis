@@ -1,8 +1,8 @@
 const { Router } = require('express');
-
+const pool = require("../../db");
 const router = Router();
 
-router.post("/package", async (req, res) => {
+router.post("/", async (req, res) => {
     try {
       const {pack_type, 
         test_title, 
@@ -24,7 +24,7 @@ router.post("/package", async (req, res) => {
     }
   });
 
-  router.get("/package", async (req, res) => {
+  router.get("/", async (req, res) => {
     try {
       const allPackages = await pool.query("SELECT * FROM package");
       res.json(allPackages.rows);
@@ -33,7 +33,7 @@ router.post("/package", async (req, res) => {
     }
   });
 
-  router.get("/package/:id", async (req, res) => {
+  router.get("/:id", async (req, res) => {
     try {
       const { pack_id } = req.params;
       const package = await pool.query("SELECT * FROM package WHERE pack_id = $1", [
@@ -46,7 +46,7 @@ router.post("/package", async (req, res) => {
     }
   });
   
-  router.put("/package/:id", async (req, res) => {
+  router.put("/:id", async (req, res) => {
     try {
       const { pack_id } = req.params;
       const {pack_type, 
@@ -69,7 +69,7 @@ router.post("/package", async (req, res) => {
     }
   });
 
-  router.delete("/package/:id", async (req, res) => {
+  router.delete("/:id", async (req, res) => {
     try {
       const { pack_id } = req.params;
       const deletePackage = await pool.query("DELETE FROM package WHERE pack_id = $1", [

@@ -1,11 +1,11 @@
 const { Router } = require('express');
-
+const pool = require("../../db");
 const router = Router();
 
 
 //routes
 
-router.post ("/enroll", async(req,res)=>{
+router.post ("/", async(req,res)=>{
     try {
         const {
             user_type, 
@@ -19,7 +19,7 @@ router.post ("/enroll", async(req,res)=>{
     }
 })
 
-router.get("/enroll", async(req,res)=>{
+router.get("/", async(req,res)=>{
     try {
       const allEnrolls = await pool.query("SELECT * FROM enroll");
       res.json(allEnrolls.rows);
@@ -29,7 +29,7 @@ router.get("/enroll", async(req,res)=>{
 })
 
 
-router.get("/enroll/:id", async(req,res)=>{
+router.get("/:id", async(req,res)=>{
     try {
         const {user_type, user_id, pack_id} = req.params;
         const enroll = await pool.query("SELECT* FROM enroll WHERE user_type = $1 AND user_id = $2 AND pack_id = $3", [user_type, user_id, pack_id]);
@@ -39,18 +39,18 @@ router.get("/enroll/:id", async(req,res)=>{
     }
 })
 
-router.put("/enroll/:id/:id2/:id3", async(req,res)=> {
+router.put("/:id/:id2/:id3", async(req,res)=> {
     try {
       const {user_type, user_id, pack_id} = req.params;
       const {enroll_date} = req.body;
       const updateSession = await pool.query("UPDATE enroll SET enroll_date = $1 WHERE user_type = $1 AND user_id = $2 AND pack_id = $3", [user_type, user_id, pack_id]);
-      res.json("Session was updated successfully");
+      res.json("Enroll was updated successfully");
     } catch (err) {
         console.error(err.message);
     }
 })
 
-router.delete("/enroll/:id/:id2/:id3", async(req,res)=>{
+router.delete("/:id/:id2/:id3", async(req,res)=>{
     try {
        const{user_type, user_id, pack_id} = req.params;
        const deleteEnroll = await pool.query("DELETE FROM enroll WHERE user_type = $1 AND user_id = $2 AND pack_id = $3", [user_type, user_id, pack_id]);

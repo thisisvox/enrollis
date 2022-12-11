@@ -1,11 +1,11 @@
 const { Router } = require('express');
-
+const pool = require("../../db");
 const router = Router();
 
 
 //routes
 //create handout -post: adding 
-router.post ("/handout", async(req,res)=>{
+router.post ("/", async(req,res)=>{
     try {
         const {
             doc_title,
@@ -20,7 +20,7 @@ router.post ("/handout", async(req,res)=>{
     }
 })
 // get all handouts
-router.get("/handout", async(req,res)=>{
+router.get("/", async(req,res)=>{
     try {
       const allHandouts = await pool.query("SELECT * FROM handout");
       res.json(allHandouts.rows);
@@ -30,7 +30,7 @@ router.get("/handout", async(req,res)=>{
 })
 
 // get a handout
-router.get("/handout/:id", async(req,res)=>{
+router.get("/:id", async(req,res)=>{
     try {
         const {doc_id} = req.params;
         const handout = await pool.query("SELECT* FROM handout WHERE doc_id = $1", [doc_id]);
@@ -40,7 +40,7 @@ router.get("/handout/:id", async(req,res)=>{
     }
 })
 //update a handout
-router.put("/handout/:id", async(req,res)=> {
+router.put("/:id", async(req,res)=> {
     try {
       const {handout_id} = req.params;
       const {doc_title, doc_description, sess_id, pack_id} = req.body;
@@ -51,7 +51,7 @@ router.put("/handout/:id", async(req,res)=> {
     }
 })
 // delete a handout
-router.delete("/session/:id", async(req,res)=>{
+router.delete("/:id", async(req,res)=>{
     try {
        const{doc_id} = req.params;
        const deleteHandout = await pool.query("DELETE FROM handout WHERE doc_id= $1", [doc_id]);
