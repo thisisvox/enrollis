@@ -58,7 +58,7 @@ router.post("/package", async (req, res) => {
         pack_days, 
         pack_stime, 
         pack_etime} = req.body;
-      const updateTodo = await pool.query(
+      const updatePackage = await pool.query(
         "UPDATE package SET pack_type = $1, test_title = $2, pack_price = $3, pack_n_session = $4, pack_sdate = $5, pack_edate = $6, pack_days = $7, pack_stime = $8, pack_etime = $9 WHERE pack_id = $2",
         [pack_type, test_title, pack_price, pack_n_session, pack_sdate,pack_edate, pack_days, pack_stime, pack_etime , pack_id]
       );
