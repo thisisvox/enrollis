@@ -11,12 +11,12 @@ router.post("/tutor", async (req, res) => {
         user_email, 
         user_phone,
         tutor_worked_hrs} = req.body;
-      const newUser = await pool.query(
+      const newTutor = await pool.query(
         "INSERT INTO tutor (user_type, user_id,user_fname, user_lname, user_email, user_phone, tutor_worked_hrs) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *",
         [user_type, user_id,user_fname, user_lname, user_email, user_phone, tutor_worked_hrs]
       );
   
-      res.json(newUser.rows[0]);
+      res.json(newTutor.rows[0]);
     } catch (err) {
       console.error(err.message);
     }
@@ -44,7 +44,7 @@ router.post("/tutor", async (req, res) => {
     }
   });
   
-  router.put("/tutor/:id", async (req, res) => {
+  router.put("/tutor/:id/:id2", async (req, res) => {
     try {
       const { user_type, user_id } = req.params;
       const {user_fname, 
@@ -52,7 +52,7 @@ router.post("/tutor", async (req, res) => {
         user_email, 
         user_phone,
         tutor_worked_hrs} = req.body;
-      const updateTodo = await pool.query(
+      const updateTutor = await pool.query(
         "UPDATE tutor SET user_type = $1, user_id = $2, user_fname = $3, user_lname = $4, user_email = $5, user_phone = $6, tutor_worked_hrs = $7 WHERE user_type = $8 AND user_id = $9",
         [user_fname, user_lname, user_email, user_phone, tutor_worked_hrs, user_type, user_id]
       );
@@ -63,7 +63,7 @@ router.post("/tutor", async (req, res) => {
     }
   });
 
-  router.delete("/tutor/:id", async (req, res) => {
+  router.delete("/tutor/:id/:id2", async (req, res) => {
     try {
       const { user_type, user_id } = req.params;
       const deleteTutor = await pool.query("DELETE FROM tutor WHERE user_type = $1 AND user_id = $2", [

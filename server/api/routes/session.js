@@ -56,7 +56,7 @@ router.put("/session/:id", async(req,res)=> {
 router.delete("/session/:id", async(req,res)=>{
     try {
        const{sess_id} = req.params;
-       const deleteTodo = await pool.query("DELETE FROM session WHERE sess_id= $1", [sess_id]);
+       const deleteSession = await pool.query("DELETE FROM session WHERE sess_id= $1", [sess_id]);
        res.json("Session was deleted successfully");
     } catch (err) {
         console.error(err.message);
