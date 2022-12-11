@@ -8,14 +8,13 @@ const tutorRouter = require("./routes/tutor")
 const adminRouter = require("./routes/admin")
 const studentRouter = require("./routes/student")
 
-
-apirouter.use('/', enrollRouter)
-apirouter.use('/', handoutRouter)
-apirouter.use('/', packageRouter)
-apirouter.use('/', sessionRouter)
-apirouter.use('/', tutorRouter)
-apirouter.use('/', adminRouter)
-apirouter.use('/', studentRouter)
+apirouter.use('/enroll', enrollRouter)
+apirouter.use('/handout', handoutRouter)
+apirouter.use('/package', packageRouter)
+apirouter.use('/session', sessionRouter)
+apirouter.use('/tutor', tutorRouter)
+apirouter.use('/admin', adminRouter)
+apirouter.use('/student', studentRouter)
 
 
 
