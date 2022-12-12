@@ -29,8 +29,8 @@ router.get("/", async(req,res)=>{
 })
 
 
-router.get("/:id", async(req,res)=>{
-    try {
+router.get("/:user_type/:user_id/:pack_id", async(req,res)=>{
+    try {     
         const {user_type, user_id, pack_id} = req.params;
         const enroll = await pool.query("SELECT* FROM enroll WHERE user_type = $1 AND user_id = $2 AND pack_id = $3", [user_type, user_id, pack_id]);
         res.json(enroll.rows[0]);
@@ -39,7 +39,7 @@ router.get("/:id", async(req,res)=>{
     }
 })
 
-router.put("/:id/:id2/:id3", async(req,res)=> {
+router.put("/:user_type/:user_id/:pack_id", async(req,res)=> {
     try {
       const {user_type, user_id, pack_id} = req.params;
       const {enroll_date} = req.body;
@@ -50,7 +50,7 @@ router.put("/:id/:id2/:id3", async(req,res)=> {
     }
 })
 
-router.delete("/:id/:id2/:id3", async(req,res)=>{
+router.delete("/:user_type/:user_id/:pack_id", async(req,res)=>{
     try {
        const{user_type, user_id, pack_id} = req.params;
        const deleteEnroll = await pool.query("DELETE FROM enroll WHERE user_type = $1 AND user_id = $2 AND pack_id = $3", [user_type, user_id, pack_id]);

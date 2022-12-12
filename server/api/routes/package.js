@@ -33,9 +33,9 @@ router.post("/", async (req, res) => {
     }
   });
 
-  router.get("/:id", async (req, res) => {
+  router.get("/:pack_id", async (req, res) => {
     try {
-      const { pack_id } = req.params;
+      const pack_id  = req.params;
       const package = await pool.query("SELECT * FROM package WHERE pack_id = $1", [
         pack_id
       ]);
@@ -46,9 +46,9 @@ router.post("/", async (req, res) => {
     }
   });
   
-  router.put("/:id", async (req, res) => {
+  router.put("/:pack_id", async (req, res) => {
     try {
-      const { pack_id } = req.params;
+      const pack_id  = req.params;
       const {pack_type, 
         test_title, 
         pack_price, 
@@ -69,9 +69,9 @@ router.post("/", async (req, res) => {
     }
   });
 
-  router.delete("/:id", async (req, res) => {
+  router.delete("/:pack_id", async (req, res) => {
     try {
-      const { pack_id } = req.params;
+      const pack_id  = req.params;
       const deletePackage = await pool.query("DELETE FROM package WHERE pack_id = $1", [
         pack_id
       ]);
