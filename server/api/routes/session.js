@@ -1,11 +1,11 @@
 const { Router } = require('express');
-
+const pool = require("../../db");
 const router = Router();
 
 
 //routes
 //create session -post: adding 
-router.post ("/session", async(req,res)=>{
+router.post ("/", async(req,res)=>{
     try {
         const {
             pack_id, 
@@ -22,9 +22,10 @@ router.post ("/session", async(req,res)=>{
     }
 })
 // get all sessions
-router.get("/session", async(req,res)=>{
+router.get("/", async(req,res)=>{
     try {
       const allSessions = await pool.query("SELECT * FROM session");
+      console.log("oui")
       res.json(allSessions.rows);
     } catch (err) {
         console.error(err.message);
@@ -32,7 +33,7 @@ router.get("/session", async(req,res)=>{
 })
 
 // get a session
-router.get("/session/:id", async(req,res)=>{
+router.get("/:id", async(req,res)=>{
     try {
         const {sess_id} = req.params;
         const session = await pool.query("SELECT* FROM session WHERE sess_id = $1", [sess_id]);
@@ -42,7 +43,7 @@ router.get("/session/:id", async(req,res)=>{
     }
 })
 //update a session
-router.put("/session/:id", async(req,res)=> {
+router.put("/:id", async(req,res)=> {
     try {
       const {sess_id} = req.params;
       const {sess_description, sess_date, sess_link, duration, user_id} = req.body;
@@ -53,7 +54,7 @@ router.put("/session/:id", async(req,res)=> {
     }
 })
 // delete a session
-router.delete("/session/:id", async(req,res)=>{
+router.delete("/:id", async(req,res)=>{
     try {
        const{sess_id} = req.params;
        const deleteSession = await pool.query("DELETE FROM session WHERE sess_id= $1", [sess_id]);
