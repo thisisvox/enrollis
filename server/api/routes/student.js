@@ -1,8 +1,8 @@
 const { Router } = require('express');
-
+const pool = require("../../db");
 const router = Router();
 
-router.post("/student", async (req, res) => {
+router.post("/", async (req, res) => {
     try {
       const {user_type, 
         user_id,
@@ -22,7 +22,7 @@ router.post("/student", async (req, res) => {
     }
   });
 
-  router.get("/student", async (req, res) => {
+  router.get("/", async (req, res) => {
     try {
       const allStudents = await pool.query("SELECT * FROM student");
       res.json(allStudents.rows);
@@ -31,7 +31,7 @@ router.post("/student", async (req, res) => {
     }
   });
 
-  router.get("/student/:id/:id2", async (req, res) => {
+  router.get("/:user_type/:user_id", async (req, res) => {
     try {
       const {user_type, user_id} = req.params;
       const student = await pool.query("SELECT * FROM student WHERE user_type = $1 AND user_id = $2", [
@@ -44,7 +44,7 @@ router.post("/student", async (req, res) => {
     }
   });
   
-  router.put("/student/:id", async (req, res) => {
+  router.put("/:user_type/:user_id", async (req, res) => {
     try {
       const { user_type, user_id } = req.params;
       const {user_fname, 
@@ -63,7 +63,7 @@ router.post("/student", async (req, res) => {
     }
   });
 
-  router.delete("/student/:id", async (req, res) => {
+  router.delete("/:user_type/:user_id", async (req, res) => {
     try {
       const { user_type, user_id } = req.params;
       const deleteStudent = await pool.query("DELETE FROM student WHERE user_type = $1 AND user_id = $2", [
@@ -76,10 +76,3 @@ router.post("/student", async (req, res) => {
   });
   
   module.exports = router;
-
-
-
-
-
-
-  

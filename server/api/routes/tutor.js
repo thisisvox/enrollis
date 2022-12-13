@@ -1,8 +1,8 @@
 const { Router } = require('express');
-
+const pool = require("../../db");
 const router = Router();
 
-router.post("/tutor", async (req, res) => {
+router.post("/", async (req, res) => {
     try {
       const {user_type, 
         user_id,
@@ -22,7 +22,7 @@ router.post("/tutor", async (req, res) => {
     }
   });
 
-  router.get("/tutor", async (req, res) => {
+  router.get("/", async (req, res) => {
     try {
       const allTutors = await pool.query("SELECT * FROM tutor");
       res.json(allTutors.rows);
@@ -31,7 +31,7 @@ router.post("/tutor", async (req, res) => {
     }
   });
 
-  router.get("/tutor/:id/:id2", async (req, res) => {
+  router.get("/::user_type/:user_id", async (req, res) => {
     try {
       const {user_type, user_id} = req.params;
       const tutor = await pool.query("SELECT * FROM tutor WHERE user_type = $1 AND user_id = $2", [
@@ -44,7 +44,7 @@ router.post("/tutor", async (req, res) => {
     }
   });
   
-  router.put("/tutor/:id/:id2", async (req, res) => {
+  router.put("/:user_type/:user_id", async (req, res) => {
     try {
       const { user_type, user_id } = req.params;
       const {user_fname, 
@@ -63,7 +63,7 @@ router.post("/tutor", async (req, res) => {
     }
   });
 
-  router.delete("/tutor/:id/:id2", async (req, res) => {
+  router.delete("/:user_type/:user_id", async (req, res) => {
     try {
       const { user_type, user_id } = req.params;
       const deleteTutor = await pool.query("DELETE FROM tutor WHERE user_type = $1 AND user_id = $2", [

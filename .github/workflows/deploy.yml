@@ -1,0 +1,31 @@
+name: Deploying to ssh server
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@master
+  
+    - name: Copy backend files via ssh password
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: 22
+        rm: true
+        source: "*"
+        target: "/home/voxy/ENROLLIS"
+    - name: Execute deploy script
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: 22
+        script: nohup sudo -u voxy /home/voxy/deploy.sh &> /home/voxy/deploy.log &
