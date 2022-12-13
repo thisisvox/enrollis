@@ -12,7 +12,7 @@ router.post ("/", async(req,res)=>{
             user_id, 
             pack_id, 
             enroll_date} = req.body;
-            const newEnroll = await pool.query("INSERT INTO enroll (user_type, user_id,pack_id,enroll_date) values ($1,$2,$3,$4 returning *", [user_type, user_id,pack_id,enroll_date]);
+            const newEnroll = await pool.query("INSERT INTO enroll (user_type, user_id,pack_id,enroll_date) values ($1,$2,$3,$4) returning *", [user_type, user_id,pack_id,enroll_date]);
             res.json(newEnroll.rows[0]);
     } catch (err) {
         console.error(err.message);
