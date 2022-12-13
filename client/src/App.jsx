@@ -43,7 +43,9 @@ function App() {
         <ScrollToTop/>
         <Header onOpenNav={() => setOpen(true)} />
       <Nav openNav={open} onCloseNav={() => setOpen(false)} />
+      <Main>
       <UserPage/>
+      </Main>
     </StyledRoot>
       </BrowserRouter>
       </HelmetProvider>
