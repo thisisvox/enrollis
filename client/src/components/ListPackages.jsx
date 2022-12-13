@@ -7,6 +7,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import moment from "moment-timezone";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -45,15 +46,22 @@ const ListPackages = ()=>{
         getRows();
     },[]);
     return (
+      <div> 
+        <h1>List of Packages</h1>
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 700 }} aria-label="customized table">
             <TableHead>
               <TableRow>
                 <StyledTableCell>Package ID</StyledTableCell>
-                <StyledTableCell align="right">Type</StyledTableCell>
-                <StyledTableCell align="right">Test</StyledTableCell>
-                <StyledTableCell align="right">Price</StyledTableCell>
-                <StyledTableCell align="right"> N° Sessions</StyledTableCell>
+                <StyledTableCell align="center">Type</StyledTableCell>
+                <StyledTableCell align="center">Test</StyledTableCell>
+                <StyledTableCell align="center">Price</StyledTableCell>
+                <StyledTableCell align="center"> N° Sessions</StyledTableCell>
+                <StyledTableCell align="center">Start Date</StyledTableCell>
+                <StyledTableCell align="center">End Date</StyledTableCell>
+                <StyledTableCell align="center">Days</StyledTableCell>
+                <StyledTableCell align="center">Start Time</StyledTableCell>
+                <StyledTableCell align="center">End Time</StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -62,15 +70,22 @@ const ListPackages = ()=>{
                   <StyledTableCell component="th" scope="row">
                     {row.pack_id}
                   </StyledTableCell>
-                  <StyledTableCell align="right">{row.pack_type}</StyledTableCell>
-                  <StyledTableCell align="right">{row.test_title}</StyledTableCell>
-                  <StyledTableCell align="right">{row.pack_price}</StyledTableCell>
-                  <StyledTableCell align="right">{row.pack_n_session}</StyledTableCell>
+                  <StyledTableCell align="center">{row.pack_type}</StyledTableCell>
+                  <StyledTableCell align="center">{row.test_title}</StyledTableCell>
+                  <StyledTableCell align="cdenter">{row.pack_price}</StyledTableCell>
+                  <StyledTableCell align="center">{row.pack_n_session}</StyledTableCell>
+                  <StyledTableCell align="center">{moment(row.pack_sdate).format('MMM D, YYYY')}</StyledTableCell>
+                  <StyledTableCell align="center">{moment(row.pack_edate).format('MMM D, YYYY')}</StyledTableCell>
+                  <StyledTableCell align="center">{row.pack_days}</StyledTableCell>
+                  <StyledTableCell align="center">{row.pack_stime}</StyledTableCell>
+                  <StyledTableCell align="center">{row.pack_etime}</StyledTableCell>
                 </StyledTableRow>
               ))}
             </TableBody>
           </Table>
         </TableContainer>
+      </div>
+        
       )
 };
 export default ListPackages;
