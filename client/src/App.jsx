@@ -6,6 +6,8 @@ import TutorPage from "./pages/TutorPage";
 import HomePage from "./pages/HomePage";
 import PackagePage from "./pages/PackagePage";
 import StudentPage from "./pages/StudentPage";
+import SessionPage from "./pages/SessionPage";
+
 
 import { useState } from "react";
 import { BrowserRouter, Outlet, Router } from "react-router-dom";
@@ -52,7 +54,8 @@ function App() {
               <Route path="/home" element = {<HomePage/>}/>
               <Route path="/tutors" element ={<TutorPage />}/>  
               <Route path="/packages" element ={<PackagePage />}/>
-              <Route path="/students" element ={<StudentPage />}/>                          
+              <Route path="/students" element ={<StudentPage />}/> 
+              <Route path="/sessions" element ={<SessionPage />}/>                                                   
             </Routes>
           </Main>
         </StyledRoot>

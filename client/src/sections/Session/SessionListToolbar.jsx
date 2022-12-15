@@ -32,13 +32,13 @@ const StyledSearch = styled(OutlinedInput)(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-PackageListToolbar.propTypes = {
+SessionListToolbar.propTypes = {
   numSelected: PropTypes.number,
   filterName: PropTypes.string,
   onFilterName: PropTypes.func,
 };
 
-export default function PackageListToolbar({ numSelected, filterName, onFilterName }) {
+export default function SessionListToolbar({ numSelected, filterName, onFilterName }) {
   return (
     <StyledRoot
       sx={{
@@ -56,7 +56,7 @@ export default function PackageListToolbar({ numSelected, filterName, onFilterNa
         <StyledSearch
           value={filterName}
           onChange={onFilterName}
-          placeholder="Search for package by type/test..."
+          placeholder="Search for Session by title/description..."
           startAdornment={
             <InputAdornment position="start">
               <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled', width: 20, height: 20 }} />
