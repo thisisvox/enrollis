@@ -24,6 +24,7 @@ import {
   TablePagination,
   Modal,
   Box,
+  TextField,
 } from '@mui/material';
 // components
 import Label from '../components/label';
@@ -33,8 +34,12 @@ import Scrollbar from '../components/scrollbar';
 import { UserListHead, UserListToolbar } from '../sections/user';
 // mock
 //import USERLIST from '../_mock/user';
-
+import { styled } from '@mui/material/styles';
 // ----------------------------------------------------------------------
+
+const StyledTextField = styled(TextField)({
+  marginBottom: 20,
+});
 
 const TABLE_HEAD = [
   { id: 'name', label: 'First Name', alignRight: false },
@@ -48,8 +53,9 @@ const style = {
   position: 'absolute',
   top: '50%',
   left: '50%',
+  borderRadius: 2,
   transform: 'translate(-50%, -50%)',
-  width: 400,
+  width: 500,
   bgcolor: 'background.paper',
   boxShadow: 24,
   p: 4,
@@ -86,9 +92,9 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function UserPage() {
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const [openm, setOpenm] = React.useState(false);
+  const handleOpen = () => setOpenm(true);
+  const handleClose = () => setOpenm(false);
 
   const [tutors, setTutors]=useState([]);
     const getTutors = async () => {
@@ -103,6 +109,7 @@ export default function UserPage() {
     useEffect(() => {
         getTutors();
     }, []);
+  const [open, setOpen] = useState(null);
 
   const [page, setPage] = useState(0);
 
@@ -192,18 +199,28 @@ export default function UserPage() {
 
 
         <Modal
-          open={open}
+          open={openm}
           onClose={handleClose}
           aria-labelledby="modal-modal-title"
           aria-describedby="modal-modal-description"
         >
           <Box sx={style}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
+            <Typography id="modal-modal-title" variant="h5" component="h2" mb={3}>
               Add Tutor
             </Typography>
-            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-              Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-            </Typography>
+            <StyledTextField
+              required id="outlined-required" label="First Name" placeholder="First Name" size='small' />
+            <StyledTextField
+              required id="outlined-required" label="Last Name" placeholder="First Name" size='small'
+            />
+            <StyledTextField
+              required id="outlined-required" label="Email" placeholder="First Name" size='small'
+            />
+            <StyledTextField
+              required id="outlined-required" label="Phone" placeholder="First Name" size='small'
+            />
+            <TextField  inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }} />
+
           </Box>
         </Modal>
 
