@@ -80,7 +80,7 @@ function applySortFilter(array, comparator, query) {
     return a[1] - b[1];
   });
   if (query) {
-    return filter(array, (item) => item.user_lname.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+    return filter(array, (item) => item.user_fname.toLowerCase().indexOf(query.toLowerCase()) !== -1 || item.user_lname.toLowerCase().indexOf(query.toLowerCase()) !== -1)
   }
   return stabilizedThis.map((el) => el[0]);
 }
@@ -177,7 +177,7 @@ export default function UserPage() {
   return (
     <>
       <Helmet>
-        <title> Tutor | Minimal UI </title>
+        <title> Tutor | Enrollis </title>
       </Helmet>
 
       <Container>
