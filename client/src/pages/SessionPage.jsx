@@ -30,23 +30,19 @@ import Label from "../components/label";
 import Iconify from "../components/iconify";
 import Scrollbar from "../components/scrollbar";
 // sections
-import { PackageListHead, PackageListToolbar } from "../sections/Package";
+import { SessionListHead, SessionListToolbar } from "../sections/Session";
 // mock
-//import PackageList from '../_mock/user';
+//import sessionList from '../_mock/user';
 import moment from "moment-timezone";
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: "name", label: "Type", alignRight: false },
-  { id: "company", label: "Test", alignRight: false },
-  { id: "role", label: "Price", alignRight: false },
-  { id: "isVerified", label: "N° Sessions", alignRight: false },
-  { id: "sdate", label: "Start Date", alignRight: false },
-  { id: "edate", label: "End Date", alignRight: false },
-  { id: "days", label: "Days", alignRight: false },
-  { id: "stime", label: "Start Time", alignRight: false },
-  { id: "etime", label: "End Time", alignRight: false },
+  { id: "name", label: "Title", alignRight: false },
+  { id: "company", label: "Description", alignRight: false },
+  { id: "role", label: "Date", alignRight: false },
+  { id: "isVerified", label: "Link", alignRight: false },
+  { id: "sdate", label: "Duration", alignRight: false },
   { id: "" },
 ];
 const style = {
@@ -88,30 +84,30 @@ function applySortFilter(array, comparator, query) {
     return filter(
       array,
       (item) =>
-        item.pack_type.toLowerCase().indexOf(query.toLowerCase()) !== -1 ||
-        item.test_title.toLowerCase().indexOf(query.toLowerCase()) !== -1
+        item.sess_title.toLowerCase().indexOf(query.toLowerCase()) !== -1 ||
+        item.sess_description.toLowerCase().indexOf(query.toLowerCase()) !== -1
     );
   }
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function PackagePage() {
+export default function sessionPage() {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const [packages, setPackages] = useState([]);
-  const getPackages = async () => {
+  const [sessions, setSessions] = useState([]);
+  const getSessions = async () => {
     try {
-      const response = await fetch("http://164.92.200.193:5000/api/package");
+      const response = await fetch("http://164.92.200.193:5000/api/session");
       const jsonData = await response.json();
-      setPackages(jsonData);
+      setSessions(jsonData);
     } catch (error) {
       console.error(error.message);
     }
   };
   useEffect(() => {
-    getPackages();
+    getSessions();
   }, []);
 
   const [page, setPage] = useState(0);
@@ -142,7 +138,7 @@ export default function PackagePage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = packages.map((package1) => package1.pack_type);
+      const newSelecteds = sessions.map((session) => session.sess_title);
       setSelected(newSelecteds);
       return;
     }
@@ -182,10 +178,10 @@ export default function PackagePage() {
   };
 
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - packages.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - sessions.length) : 0;
 
   const filteredUsers = applySortFilter(
-    packages,
+    sessions,
     getComparator(order, orderBy),
     filterName
   );
@@ -195,7 +191,7 @@ export default function PackagePage() {
   return (
     <>
       <Helmet>
-        <title> Package | Enrollis </title>
+        <title> Session | Enrollis </title>
       </Helmet>
 
       <Container>
@@ -206,13 +202,13 @@ export default function PackagePage() {
           mb={5}
         >
           <Typography variant="h4" gutterBottom>
-            Packages
+            Sessions
           </Typography>
           <Button
             variant="contained"
             startIcon={<Iconify icon="eva:plus-fill" onClick={handleOpen} />}
           >
-            New Package
+            New session
           </Button>
         </Stack>
 
@@ -224,7 +220,7 @@ export default function PackagePage() {
         >
           <Box sx={style}>
             <Typography id="modal-modal-title" variant="h6" component="h2">
-              Add Package
+              Add Session
             </Typography>
             <Typography id="modal-modal-description" sx={{ mt: 2 }}>
               Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
@@ -233,7 +229,7 @@ export default function PackagePage() {
         </Modal>
 
         <Card>
-          <PackageListToolbar
+          <SessionListToolbar
             numSelected={selected.length}
             filterName={filterName}
             onFilterName={handleFilterByName}
@@ -242,52 +238,46 @@ export default function PackagePage() {
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
-                <PackageListHead
+                <SessionListHead
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={packages.length}
+                  rowCount={sessions.length}
                   numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
-                  {filteredUsers.map((package1) => (
+                  {filteredUsers.map((session) => (
                     <TableRow
                       hover
-                      key={package1.pack_id}
+                      key={session.sess_id}
                       tabIndex={-1}
                       role="checkbox"
                     >
                       <TableCell padding="checkbox">
                         <Checkbox
                           onChange={(event) =>
-                            handleClick(event, package1.pack_type)
+                            handleClick(event, session.sess_title)
                           }
                         />
                       </TableCell>
                       <TableCell component="th" scope="row" padding="none">
                         <Typography variant="subtitle2" p={2}>
-                          {package1.pack_type}
+                          {session.sess_title}
                         </Typography>
                       </TableCell>
-                      <TableCell align="left">{package1.test_title}</TableCell>
-
-                      <TableCell align="left">{package1.pack_price}</TableCell>
-
-                      <TableCell align="center">
-                        {package1.pack_n_session}
-                      </TableCell>
+                      <TableCell align="left">{session.sess_description}</TableCell>
                       <TableCell align="left">
-                        {moment(package1.pack_sdate).format("MMM D, YYYY")}
+                        {moment(session.sess_date).format("MMM D, YYYY")}
                       </TableCell>
-                      <TableCell align="left">
-                        {moment(package1.pack_edate).format("MMM D, YYYY")}
-                      </TableCell>
+                     
 
-                      <TableCell align="left">{package1.pack_days}</TableCell>
-                      <TableCell align="left">{package1.pack_stime}</TableCell>
-                      <TableCell align="left">{package1.pack_etime}</TableCell>
+                      <TableCell align="left">
+                        {session.link}
+                      </TableCell>
+                      <TableCell align="center">{session.duration}</TableCell>
+                      
 
                       <TableCell align="right">
                         <IconButton
@@ -302,7 +292,7 @@ export default function PackagePage() {
                   ))}
                   {emptyRows > 0 && (
                     <TableRow style={{ height: 53 * emptyRows }}>
-                      <TableCell colSpan={6} />
+                      <TableCell colSpan={5} />
                     </TableRow>
                   )}
                 </TableBody>
@@ -310,7 +300,7 @@ export default function PackagePage() {
                 {isNotFound && (
                   <TableBody>
                     <TableRow>
-                      <TableCell align="center" colSpan={12} sx={{ py: 3 }}>
+                      <TableCell align="center" colSpan={5} sx={{ py: 3 }}>
                         <Paper
                           sx={{
                             textAlign: "center",
@@ -338,7 +328,7 @@ export default function PackagePage() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={packages.length}
+            count={sessions.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -366,17 +356,19 @@ export default function PackagePage() {
         }}
       >
         <MenuItem>
-          <Button variant="contained" href="/sessions">View Sessions</Button>
+          <form action="/sessions" class="inline">
+          <Button variant="contained" href="/home">View Handouts</Button>
+          </form>
         </MenuItem>
 
         <MenuItem>
           <Iconify icon={"eva:edit-fill"} sx={{ mr: 2 }} />
-          Edit Pack
+          Edit Session
         </MenuItem>
 
         <MenuItem sx={{ color: "error.main" }}>
           <Iconify icon={"eva:trash-2-outline"} sx={{ mr: 2 }} />
-          Delete Pack
+          Delete Session
         </MenuItem>
       </Popover>
     </>
