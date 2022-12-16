@@ -139,7 +139,7 @@ export default function TutorPage() {
     e.preventDefault();
 try {
     const body = {user_fname: fname, user_lname: lname, user_email: email, user_phone: phone};
-    const response = await fetch ("http://localhost:5000/api/tutor", {
+    const response = await fetch ("http://164.92.200.193:5000/api/tutor", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(body)
