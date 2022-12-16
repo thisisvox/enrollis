@@ -101,10 +101,10 @@ export default function TutorPage() {
 
   const [tutors, setTutors]=useState([]);
 
-  const[user_fname, setUserFname]=useState("");
-  const[user_lname, setUserLname]=useState("");
-  const[user_email, setUserEmail]=useState("");
-  const[user_phone, setUserPhone]=useState("");
+  const[fname, setFname]=useState("");
+  const[lname, setLname]=useState("");
+  const[email, setEmail]=useState("");
+  const[phone, setPhone]=useState("");
 
     const getTutors = async () => {
     try {
@@ -115,7 +115,7 @@ export default function TutorPage() {
         console.error(error.message);
     }
     }
-
+/*
     const editTutor = async (e) => {
       e.preventDefault();
   try {
@@ -133,20 +133,18 @@ export default function TutorPage() {
   } catch (error) {
       console.error(error.message);
   }
-  }
+  }*/
   const addTutor = async e => {
+    console.log(phone)
     e.preventDefault();
 try {
-    const body = {user_fname, 
-      user_lname, 
-      user_email, 
-      user_phone};
-    const response = await fetch ("http://164.92.200.193:5000/api/tutor", {
+    const body = {user_fname: fname, user_lname: lname, user_email: email, user_phone: phone};
+    const response = await fetch ("http://localhost:5000/api/tutor", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(body)
     });
-    window.location="/";
+    window.location="/tutors";
 } catch (error) {
     console.error(error.message);
 }
@@ -170,7 +168,7 @@ try {
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const handleChange = (newPhone) => {
-    setUserPhone(newPhone)
+    setPhone(newPhone)
   }
 
   const handleOpenMenu = (event) => {
@@ -261,16 +259,16 @@ try {
             <Divider style={{width:'100%'}}/>
             <Stack justifyContent="center" alignItems="center" spacing={3} mt={4} mb={3} >
               <TextField
-                required id="outlined-required" label="First Name" placeholder="First Name" size='small' value={user_fname} onChange={e=> setUserFname(e.target.value)} style={{width:'80%'}}/>
+                required id="outlined-required" label="First Name" placeholder="First Name" size='small' value={fname} onChange={e=> setFname(e.target.value)} style={{width:'80%'}}/>
               <TextField
-                required id="outlined-required" label="Last Name" placeholder="First Name" size='small' value={user_lname} onChange={e=> setUserLname(e.target.value)} style={{width:'80%'}}
+                required id="outlined-required" label="Last Name" placeholder="First Name" size='small' value={lname} onChange={e=> setLname(e.target.value)} style={{width:'80%'}}
               />
               <TextField
-                required id="outlined-required" label="Email" placeholder="Email" size='small' value={user_email} onChange={e=> setUserEmail(e.target.value)} style={{width:'80%'}}
+                required id="outlined-required" label="Email" placeholder="Email" size='small' value={email} onChange={e=> setEmail(e.target.value)} style={{width:'80%'}}
               />
-              <MuiTelInput defaultCountry='MA' splitCallingCode size='small' value={user_phone} onChange={handleChange} style={{width:'80%'}}/>
+              <MuiTelInput defaultCountry='MA' size='small' value={phone} onChange={handleChange} style={{width:'80%'}}/>
             </Stack>
-            <Button variant="contained" startIcon={<CheckIcon />} onClick={() =>{handleClose();addTutor()}} style={{width:'50%'}}>Save</Button>
+            <Button variant="contained" startIcon={<CheckIcon />} onClick={addTutor} style={{width:'50%'}}>Save</Button>
           </Box>
         </Modal>
 

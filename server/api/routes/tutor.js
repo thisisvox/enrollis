@@ -4,16 +4,15 @@ const router = Router();
 
 router.post("/", async (req, res) => {
     try {
-      const {user_type, 
-        user_id,
+      const {
         user_fname, 
         user_lname, 
         user_email, 
-        user_phone,
-        tutor_worked_hrs} = req.body;
+        user_phone} = req.body;
+        console.log(req.body)
       const newTutor = await pool.query(
-        "INSERT INTO tutor (user_type, user_id,user_fname, user_lname, user_email, user_phone, tutor_worked_hrs) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *",
-        [user_type, user_id,user_fname, user_lname, user_email, user_phone, tutor_worked_hrs]
+        "INSERT INTO tutor (user_fname, user_lname, user_email, user_phone, tutor_worked_hrs) VALUES($1,$2,$3,$4,0) RETURNING *",
+        [user_fname, user_lname, user_email, user_phone]
       );
   
       res.json(newTutor.rows[0]);
@@ -53,7 +52,7 @@ router.post("/", async (req, res) => {
         user_phone,
         tutor_worked_hrs} = req.body;
       const updateTutor = await pool.query(
-        "UPDATE tutor SET user_type = $1, user_id = $2, user_fname = $3, user_lname = $4, user_email = $5, user_phone = $6, tutor_worked_hrs = $7 WHERE user_type = $8 AND user_id = $9",
+        "UPDATE tutor SET user_fname = $1, user_lname = $2, user_email = $3, user_phone = $4, tutor_worked_hrs = $5 WHERE user_type = $6 AND user_id = $7",
         [user_fname, user_lname, user_email, user_phone, tutor_worked_hrs, user_type, user_id]
       );
   
