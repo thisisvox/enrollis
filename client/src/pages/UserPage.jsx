@@ -3,6 +3,9 @@ import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
 import { useState, useEffect } from 'react';
+import { MuiTelInput } from 'mui-tel-input';
+import CheckIcon from '@mui/icons-material/Check';
+import AddTutor from '../components/AddTutor';
 // @mui
 import {
   Card,
@@ -25,6 +28,7 @@ import {
   Modal,
   Box,
   TextField,
+  Divider,
 } from '@mui/material';
 // components
 import Label from '../components/label';
@@ -35,11 +39,9 @@ import { UserListHead, UserListToolbar } from '../sections/user';
 // mock
 //import USERLIST from '../_mock/user';
 import { styled } from '@mui/material/styles';
+import { display } from '@mui/system';
 // ----------------------------------------------------------------------
 
-const StyledTextField = styled(TextField)({
-  marginBottom: 20,
-});
 
 const TABLE_HEAD = [
   { id: 'name', label: 'First Name', alignRight: false },
@@ -51,14 +53,17 @@ const TABLE_HEAD = [
 ];
 const style = {
   position: 'absolute',
+  display: 'flex',
+  alignItems: 'center',
+  flexDirection: 'column',
   top: '50%',
   left: '50%',
   borderRadius: 2,
   transform: 'translate(-50%, -50%)',
-  width: 500,
+  width: 450,
   bgcolor: 'background.paper',
   boxShadow: 24,
-  p: 4,
+  p: 3,
 };
 // ----------------------------------------------------------------------
 
@@ -92,11 +97,17 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function UserPage() {
-  const [openm, setOpenm] = React.useState(false);
+  const [openm, setOpenm] = useState(false);
   const handleOpen = () => setOpenm(true);
   const handleClose = () => setOpenm(false);
 
   const [tutors, setTutors]=useState([]);
+
+  const[user_fname, setUserFname]=useState("");
+  const[user_lname, setUserLname]=useState("");
+  const[user_email, setUserEmail]=useState("");
+  const[user_phone, setUserPhone]=useState("");
+
     const getTutors = async () => {
     try {
         const response = await fetch ("http://164.92.200.193:5000/api/tutor");
@@ -106,9 +117,46 @@ export default function UserPage() {
         console.error(error.message);
     }
     }
+
+    const editTutor = async (e) => {
+      e.preventDefault();
+  try {
+      const body = {user_fname, 
+        user_lname, 
+        user_email, 
+        user_phone,
+        tutor_worked_hrs};
+      const response = await fetch (`http://164.92.200.193:5000/api/tutor/:${tutor.user_type}/:${tutor.user_id}`, {
+          method: "PUT",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(body)
+      });
+      window.location="/";
+  } catch (error) {
+      console.error(error.message);
+  }
+  }
+  const addTutor = async e => {
+    e.preventDefault();
+try {
+    const body = {user_fname, 
+      user_lname, 
+      user_email, 
+      user_phone};
+    const response = await fetch ("http://164.92.200.193:5000/api/tutor", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(body)
+    });
+    window.location="/";
+} catch (error) {
+    console.error(error.message);
+}
+}
     useEffect(() => {
         getTutors();
     }, []);
+
   const [open, setOpen] = useState(null);
 
   const [page, setPage] = useState(0);
@@ -122,6 +170,10 @@ export default function UserPage() {
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const handleChange = (newPhone) => {
+    setUserPhone(newPhone)
+  }
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -192,7 +244,7 @@ export default function UserPage() {
           <Typography variant="h4" gutterBottom>
             Tutors
           </Typography>
-          <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" onClick={handleOpen} />}>
+          <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpen}>
             New Tutor
           </Button>
         </Stack>
@@ -205,22 +257,22 @@ export default function UserPage() {
           aria-describedby="modal-modal-description"
         >
           <Box sx={style}>
-            <Typography id="modal-modal-title" variant="h5" component="h2" mb={3}>
+            <Typography id="modal-modal-title" variant="h5" component="h2" mb={1}>
               Add Tutor
             </Typography>
-            <StyledTextField
-              required id="outlined-required" label="First Name" placeholder="First Name" size='small' />
-            <StyledTextField
-              required id="outlined-required" label="Last Name" placeholder="First Name" size='small'
-            />
-            <StyledTextField
-              required id="outlined-required" label="Email" placeholder="First Name" size='small'
-            />
-            <StyledTextField
-              required id="outlined-required" label="Phone" placeholder="First Name" size='small'
-            />
-            <TextField  inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }} />
-
+            <Divider style={{width:'100%'}}/>
+            <Stack justifyContent="center" alignItems="center" spacing={3} mt={4} mb={3} >
+              <TextField
+                required id="outlined-required" label="First Name" placeholder="First Name" size='small' value={user_fname} onChange={e=> setUserFname(e.target.value)} style={{width:'80%'}}/>
+              <TextField
+                required id="outlined-required" label="Last Name" placeholder="First Name" size='small' value={user_lname} onChange={e=> setUserLname(e.target.value)} style={{width:'80%'}}
+              />
+              <TextField
+                required id="outlined-required" label="Email" placeholder="Email" size='small' value={user_email} onChange={e=> setUserEmail(e.target.value)} style={{width:'80%'}}
+              />
+              <MuiTelInput defaultCountry='MA' splitCallingCode size='small' value={user_phone} onChange={handleChange} style={{width:'80%'}}/>
+            </Stack>
+            <Button variant="contained" startIcon={<CheckIcon />} onClick={() =>{handleClose();addTutor()}} style={{width:'50%'}}>Save</Button>
           </Box>
         </Modal>
 
@@ -336,7 +388,7 @@ export default function UserPage() {
           },
         }}
       >
-        <MenuItem>
+        <MenuItem onClick={handleOpen}>
           <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
           Edit
         </MenuItem>
