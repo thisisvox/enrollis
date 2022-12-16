@@ -3,9 +3,6 @@ import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
 import { useState, useEffect } from 'react';
-import { MuiTelInput } from 'mui-tel-input';
-import CheckIcon from '@mui/icons-material/Check';
-import AddTutor from '../components/AddTutor';
 // @mui
 import {
   Card,
@@ -27,43 +24,35 @@ import {
   TablePagination,
   Modal,
   Box,
-  TextField,
-  Divider,
 } from '@mui/material';
 // components
 import Label from '../components/label';
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 // sections
-import { UserListHead, UserListToolbar } from '../sections/user';
+import { StudentListHead, StudentListToolbar } from '../sections/Student';
 // mock
-//import USERLIST from '../_mock/user';
-import { styled } from '@mui/material/styles';
-import { display } from '@mui/system';
-// ----------------------------------------------------------------------
+//import StudentList from '../_mock/user';
 
+// ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'name', label: 'First Name', alignRight: false },
   { id: 'company', label: 'Last Name', alignRight: false },
   { id: 'role', label: 'Email', alignRight: false },
   { id: 'isVerified', label: 'Phone', alignRight: false },
-  { id: 'status', label: 'Worked Hours', alignRight: false },
+  { id: 'status', label: 'Level', alignRight: false },
   { id: '' },
 ];
 const style = {
   position: 'absolute',
-  display: 'flex',
-  alignItems: 'center',
-  flexDirection: 'column',
   top: '50%',
   left: '50%',
-  borderRadius: 2,
   transform: 'translate(-50%, -50%)',
-  width: 450,
+  width: 400,
   bgcolor: 'background.paper',
   boxShadow: 24,
-  p: 3,
+  p: 4,
 };
 // ----------------------------------------------------------------------
 
@@ -91,73 +80,29 @@ function applySortFilter(array, comparator, query) {
     return a[1] - b[1];
   });
   if (query) {
-    return filter(array, (item) => item.user_lname.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+    return filter(array, (item) => item.user_fname.toLowerCase().indexOf(query.toLowerCase()) !== -1 || item.user_lname.toLowerCase().indexOf(query.toLowerCase()) !== -1)
   }
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function UserPage() {
-  const [openm, setOpenm] = useState(false);
-  const handleOpen = () => setOpenm(true);
-  const handleClose = () => setOpenm(false);
+export default function StudentPage() {
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
-  const [tutors, setTutors]=useState([]);
-
-  const[user_fname, setUserFname]=useState("");
-  const[user_lname, setUserLname]=useState("");
-  const[user_email, setUserEmail]=useState("");
-  const[user_phone, setUserPhone]=useState("");
-
-    const getTutors = async () => {
+  const [Students, setStudents]=useState([]);
+    const getStudents = async () => {
     try {
-        const response = await fetch ("http://164.92.200.193:5000/api/tutor");
+        const response = await fetch ("http://164.92.200.193:5000/api/Student");
         const jsonData = await response.json();
-        setTutors(jsonData);
+        setStudents(jsonData);
     } catch (error) {
         console.error(error.message);
     }
     }
-
-    const editTutor = async (e) => {
-      e.preventDefault();
-  try {
-      const body = {user_fname, 
-        user_lname, 
-        user_email, 
-        user_phone,
-        tutor_worked_hrs};
-      const response = await fetch (`http://164.92.200.193:5000/api/tutor/:${tutor.user_type}/:${tutor.user_id}`, {
-          method: "PUT",
-          headers: {"Content-Type": "application/json"},
-          body: JSON.stringify(body)
-      });
-      window.location="/";
-  } catch (error) {
-      console.error(error.message);
-  }
-  }
-  const addTutor = async e => {
-    e.preventDefault();
-try {
-    const body = {user_fname, 
-      user_lname, 
-      user_email, 
-      user_phone};
-    const response = await fetch ("http://164.92.200.193:5000/api/tutor", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(body)
-    });
-    window.location="/";
-} catch (error) {
-    console.error(error.message);
-}
-}
     useEffect(() => {
-        getTutors();
+        getStudents();
     }, []);
-
-  const [open, setOpen] = useState(null);
 
   const [page, setPage] = useState(0);
 
@@ -170,10 +115,6 @@ try {
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  const handleChange = (newPhone) => {
-    setUserPhone(newPhone)
-  }
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -191,7 +132,7 @@ try {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = tutors.map((tutor) => tutor.user_fname);
+      const newSelecteds = Students.map((Student) => Student.user_fname);
       setSelected(newSelecteds);
       return;
     }
@@ -227,93 +168,83 @@ try {
     setFilterName(event.target.value);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - tutors.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - Students.length) : 0;
 
-  const filteredUsers = applySortFilter(tutors, getComparator(order, orderBy), filterName);
+  const filteredUsers = applySortFilter(Students, getComparator(order, orderBy), filterName);
 
   const isNotFound = !filteredUsers.length && !!filterName;
 
   return (
     <>
       <Helmet>
-        <title> Tutor | Minimal UI </title>
+        <title> Student | Enrollis </title>
       </Helmet>
 
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Tutors
+            Students
           </Typography>
-          <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpen}>
-            New Tutor
+          <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" onClick={handleOpen} />}>
+            New Student
           </Button>
         </Stack>
 
 
         <Modal
-          open={openm}
+          open={open}
           onClose={handleClose}
           aria-labelledby="modal-modal-title"
           aria-describedby="modal-modal-description"
         >
           <Box sx={style}>
-            <Typography id="modal-modal-title" variant="h5" component="h2" mb={1}>
-              Add Tutor
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              Add Student
             </Typography>
-            <Divider style={{width:'100%'}}/>
-            <Stack justifyContent="center" alignItems="center" spacing={3} mt={4} mb={3} >
-              <TextField
-                required id="outlined-required" label="First Name" placeholder="First Name" size='small' value={user_fname} onChange={e=> setUserFname(e.target.value)} style={{width:'80%'}}/>
-              <TextField
-                required id="outlined-required" label="Last Name" placeholder="First Name" size='small' value={user_lname} onChange={e=> setUserLname(e.target.value)} style={{width:'80%'}}
-              />
-              <TextField
-                required id="outlined-required" label="Email" placeholder="Email" size='small' value={user_email} onChange={e=> setUserEmail(e.target.value)} style={{width:'80%'}}
-              />
-              <MuiTelInput defaultCountry='MA' splitCallingCode size='small' value={user_phone} onChange={handleChange} style={{width:'80%'}}/>
-            </Stack>
-            <Button variant="contained" startIcon={<CheckIcon />} onClick={() =>{handleClose();addTutor()}} style={{width:'50%'}}>Save</Button>
+            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+              Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+            </Typography>
           </Box>
         </Modal>
 
 
         <Card>
-          <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
+          <StudentListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
 
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
-                <UserListHead
+                <StudentListHead
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={tutors.length}
+                  rowCount={Students.length}
                   numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
                 
-                  {filteredUsers.map((tutor) => (
-                      <TableRow hover key={tutor.user_id} tabIndex={-1} role="checkbox">
+                  {filteredUsers.map((Student) => (
+                      <TableRow hover key={Student.user_id} tabIndex={-1} role="checkbox">
                         <TableCell padding="checkbox">
-                          <Checkbox onChange={(event) => handleClick(event, tutor.user_fname)} />
+                          <Checkbox onChange={(event) => handleClick(event, Student.user_fname)} />
                         </TableCell>
                         <TableCell component="th" scope="row" padding="none">
       
                             <Typography variant="subtitle2" p={2}>
-                              {tutor.user_fname}
+                              {Student.user_fname}
                             </Typography>
                         
                         </TableCell>
-                        <TableCell align="left">{tutor.user_lname}</TableCell>
+                        <TableCell align="left">{Student.user_lname}</TableCell>
 
-                        <TableCell align="left">{tutor.user_email}</TableCell>
+                        <TableCell align="left">{Student.user_email}</TableCell>
 
-                        <TableCell align="left">{tutor.user_phone}</TableCell>
+                        <TableCell align="left">{Student.user_phone}</TableCell>
 
                         <TableCell align="left">
-                          {tutor.tutor_worked_hrs}
+                          {Student.stu_level}
                         </TableCell>
 
                         <TableCell align="right">
@@ -361,7 +292,7 @@ try {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={tutors.length}
+            count={Students.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -388,7 +319,7 @@ try {
           },
         }}
       >
-        <MenuItem onClick={handleOpen}>
+        <MenuItem>
           <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
           Edit
         </MenuItem>

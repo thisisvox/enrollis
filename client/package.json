@@ -18,7 +18,11 @@
     "date-fns": "^2.29.3",
     "localforage": "^1.10.0",
     "match-sorter": "^6.3.1",
+<<<<<<< HEAD
     "mui-tel-input": "^2.1.0",
+=======
+    "moment-timezone": "^0.5.40",
+>>>>>>> 42f67943fccbd271feb9aad5dd87c2111048af05
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-helmet-async": "^1.3.0",

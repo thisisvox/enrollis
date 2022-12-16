@@ -35,7 +35,7 @@ router.post("/", async (req, res) => {
 
   router.get("/:pack_id", async (req, res) => {
     try {
-      const pack_id  = req.params;
+      const {pack_id}  = req.params;
       const package = await pool.query("SELECT * FROM package WHERE pack_id = $1", [
         pack_id
       ]);
