@@ -5,7 +5,6 @@ import { sentenceCase } from 'change-case';
 import { useState, useEffect } from 'react';
 import { MuiTelInput } from 'mui-tel-input';
 import CheckIcon from '@mui/icons-material/Check';
-import AddTutor from '../components/AddTutor';
 // @mui
 import {
   Card,
@@ -36,15 +35,9 @@ import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 // sections
 import { TutorListHead, TutorListToolbar } from '../sections/Tutor';
-// mock
-<<<<<<< HEAD:client/src/pages/UserPage.jsx
-//import USERLIST from '../_mock/user';
+
 import { styled } from '@mui/material/styles';
 import { display } from '@mui/system';
-=======
-//import TutorList from '../_mock/user';
-
->>>>>>> 42f67943fccbd271feb9aad5dd87c2111048af05:client/src/pages/TutorPage.jsx
 // ----------------------------------------------------------------------
 
 
@@ -101,17 +94,10 @@ function applySortFilter(array, comparator, query) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-<<<<<<< HEAD:client/src/pages/UserPage.jsx
-export default function UserPage() {
+export default function TutorPage() {
   const [openm, setOpenm] = useState(false);
   const handleOpen = () => setOpenm(true);
   const handleClose = () => setOpenm(false);
-=======
-export default function TutorPage() {
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
->>>>>>> 42f67943fccbd271feb9aad5dd87c2111048af05:client/src/pages/TutorPage.jsx
 
   const [tutors, setTutors]=useState([]);
 
