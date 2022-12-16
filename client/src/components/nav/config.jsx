@@ -13,17 +13,17 @@ const navConfig = [
   },
   {
     title: 'tutors',
-    path: '/dashboard/user',
+    path: '/tutors',
     icon: icon('ic_user'),
   },
   {
     title: 'packages',
-    path: '/dashboard/products',
+    path: '/packages',
     icon: icon('ic_cart'),
   },
   {
     title: 'students',
-    path: '/dashboard/blog',
+    path: '/students',
     icon: icon('ic_blog'),
   },/*
   {

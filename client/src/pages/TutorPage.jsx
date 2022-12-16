@@ -30,9 +30,9 @@ import Label from '../components/label';
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 // sections
-import { UserListHead, UserListToolbar } from '../sections/user';
+import { TutorListHead, TutorListToolbar } from '../sections/Tutor';
 // mock
-//import USERLIST from '../_mock/user';
+//import TutorList from '../_mock/user';
 
 // ----------------------------------------------------------------------
 
@@ -80,12 +80,12 @@ function applySortFilter(array, comparator, query) {
     return a[1] - b[1];
   });
   if (query) {
-    return filter(array, (item) => item.user_lname.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+    return filter(array, (item) => item.user_fname.toLowerCase().indexOf(query.toLowerCase()) !== -1 || item.user_lname.toLowerCase().indexOf(query.toLowerCase()) !== -1)
   }
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function UserPage() {
+export default function TutorPage() {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -177,7 +177,7 @@ export default function UserPage() {
   return (
     <>
       <Helmet>
-        <title> Tutor | Minimal UI </title>
+        <title> Tutor | Enrollis </title>
       </Helmet>
 
       <Container>
@@ -209,12 +209,12 @@ export default function UserPage() {
 
 
         <Card>
-          <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
+          <TutorListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
 
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
-                <UserListHead
+                <TutorListHead
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
@@ -243,7 +243,7 @@ export default function UserPage() {
 
                         <TableCell align="left">{tutor.user_phone}</TableCell>
 
-                        <TableCell align="left">
+                        <TableCell align="center">
                           {tutor.tutor_worked_hrs}
                         </TableCell>
 
