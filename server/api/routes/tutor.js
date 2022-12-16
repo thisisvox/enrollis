@@ -31,7 +31,7 @@ router.post("/", async (req, res) => {
     }
   });
 
-  router.get("/::user_type/:user_id", async (req, res) => {
+  router.get("/:user_type/:user_id", async (req, res) => {
     try {
       const {user_type, user_id} = req.params;
       const tutor = await pool.query("SELECT * FROM tutor WHERE user_type = $1 AND user_id = $2", [
