@@ -4,16 +4,15 @@ const router = Router();
 
 router.post("/", async (req, res) => {
     try {
-      const {user_type, 
-        user_id,
+      const {
         user_fname, 
         user_lname, 
         user_email, 
         user_phone,
         stu_level} = req.body;
       const newStudent = await pool.query(
-        "INSERT INTO student (user_type, user_id,user_fname, user_lname, user_email, user_phone, stu_level) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *",
-        [user_type, user_id,user_fname, user_lname, user_email, user_phone, stu_level]
+        "INSERT INTO student (user_fname, user_lname, user_email, user_phone, stu_level) VALUES($1,$2,$3,$4,$5) RETURNING *",
+        [user_fname, user_lname, user_email, user_phone, stu_level]
       );
   
       res.json(newStudent.rows[0]);
@@ -53,7 +52,7 @@ router.post("/", async (req, res) => {
         user_phone,
         stu_level} = req.body;
       const updateStudent = await pool.query(
-        "UPDATE student SET user_type = $1, user_id = $2, user_fname = $3, user_lname = $4, user_email = $5, user_phone = $6, stu_level = $7 WHERE user_type = $8 AND user_id = $9",
+        "UPDATE student SET user_fname = $1, user_lname = $2, user_email = $3, user_phone = $4, stu_level = $5 WHERE user_type = $6 AND user_id = $7",
         [user_fname, user_lname, user_email, user_phone, stu_level, user_type, user_id]
       );
   
