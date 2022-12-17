@@ -338,7 +338,7 @@ const handleEtimeChange = (newValue) => {
             </Typography>
             <Divider style={{width:'100%'}}/>
 
-            <Box style={{maxHeight: 500, overflow: 'auto', width: '100%'}} display="flex" flexDirection="column" justifyContent="center" alignItems="center">
+            <Box style={{maxHeight: 500, overflow: 'auto', width: '100%', paddingTop: 280}} display="flex" flexDirection="column" justifyContent="center" alignItems="center">
               <Stack spacing={4} mt={5} mb={5} sx={{ width: '80%' }} >
                 <FormControl size="small">
                   <InputLabel id="demo-simple-select-label">Package Type</InputLabel>
