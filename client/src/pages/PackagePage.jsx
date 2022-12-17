@@ -158,7 +158,7 @@ try {
         pack_days: packageForm.pack_days.toString(), 
         pack_stime: moment(packageForm.pack_stime).format("h:mm:ss a"), 
         pack_etime: moment(packageForm.pack_etime).format("h:mm:ss a")};
-    const response = await fetch ("http://localhost:5000/api/package", {
+    const response = await fetch ("http://164.92.200.193:5000/api/package", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(body)
