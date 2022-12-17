@@ -115,7 +115,6 @@ export default function StudentPage() {
     }
     }
     const addStudent = async e => {
-      console.log(phone)
       e.preventDefault();
   try {
       const body = {user_fname: fname, user_lname: lname, user_email: email, user_phone: phone, stu_level: level};

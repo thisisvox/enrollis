@@ -3,6 +3,13 @@ import { Helmet } from "react-helmet-async";
 import { filter } from "lodash";
 import { sentenceCase } from "change-case";
 import { useState, useEffect } from "react";
+import CheckIcon from '@mui/icons-material/Check';
+import dayjs from 'dayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 // @mui
 import {
   Card,
@@ -24,6 +31,14 @@ import {
   TablePagination,
   Modal,
   Box,
+  Divider,
+  TextField,
+  Select,
+  InputLabel,
+  FormControl,
+  OutlinedInput,
+  InputAdornment,
+  ListItemText
 } from "@mui/material";
 // components
 import Label from "../components/label";
@@ -50,14 +65,19 @@ const TABLE_HEAD = [
   { id: "" },
 ];
 const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
+  position: 'absolute',
+  display: 'flex',
+  alignItems: 'center',
+  flexDirection: 'column',
+  top: '50%',
+  left: '50%',
+  borderRadius: 2,
+  transform: 'translate(-50%, -50%)',
+  width: 450,
+  bgcolor: 'background.paper',
   boxShadow: 24,
-  p: 4,
+  paddingTop: 3,
+  paddingBottom: 5
 };
 // ----------------------------------------------------------------------
 
@@ -96,9 +116,23 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function PackagePage() {
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const [openm, setOpenm] = useState(false);
+  const handleOpen = () => setOpenm(true);
+  const handleClose = () => setOpenm(false);
+
+  const [packageForm, setPackageForm]= useState({
+    pack_type: '', test_title: '', pack_price: '', pack_n_session: '', pack_sdate: dayjs(), pack_edate: dayjs(),  pack_days: [], pack_stime: dayjs(), pack_etime: dayjs()
+  });
+  /*
+  const[type, setType]=useState("");
+  const[title, setTitle]=useState("");
+  const[price, setEmail]=useState("");
+  const[sessions, setSessions]=useState("");
+  const[sdate, setSdate]=useState("");
+  const[edate, setEdate]=useState("");
+  const[days, setDays]=useState("");
+  const[sTime, setStime]=useState("");
+  const[eTime, setEtime]=useState("");*/
 
   const [packages, setPackages] = useState([]);
   const getPackages = async () => {
@@ -110,9 +144,36 @@ export default function PackagePage() {
       console.error(error.message);
     }
   };
+
+  const addPackage = async e => {
+    console.log(packageForm.pack_type)
+    e.preventDefault();
+try {
+    const body = {pack_type: packageForm.pack_type, 
+        test_title: packageForm.test_title, 
+        pack_price: packageForm.pack_price, 
+        pack_n_session: packageForm.pack_n_session, 
+        pack_sdate: packageForm.pack_sdate, 
+        pack_edate: packageForm.pack_edate, 
+        pack_days: packageForm.pack_days.toString(), 
+        pack_stime: moment(packageForm.pack_stime).format("h:mm:ss a"), 
+        pack_etime: moment(packageForm.pack_etime).format("h:mm:ss a")};
+    const response = await fetch ("http://localhost:5000/api/package", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(body)
+    });
+    console.log(packageForm.pack_price)
+    window.location="/packages";
+} catch (error) {
+    console.error(error.message);
+}
+}
+
   useEffect(() => {
     getPackages();
   }, []);
+  const [open, setOpen] = useState(false); 
 
   const [page, setPage] = useState(0);
 
@@ -192,6 +253,56 @@ export default function PackagePage() {
 
   const isNotFound = !filteredUsers.length && !!filterName;
 
+  const handleFormOnChange = (key, value) => {
+    setPackageForm({...packageForm, [key]: value})
+    console.log(packageForm)
+  }
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
+
+const days = [
+  'M',
+  'T',
+  'W',
+  'R',
+  'F',
+  'S',
+  'U'
+];
+  
+
+const handleSdateChange = (newValue) => {
+  handleFormOnChange('pack_sdate', newValue);
+};
+
+const handleEdateChange = (newValue) => {
+  handleFormOnChange('pack_edate', newValue);
+};
+
+const handleStimeChange = (newValue) => {
+  handleFormOnChange('pack_stime', newValue);
+};
+
+const handleEtimeChange = (newValue) => {
+  handleFormOnChange('pack_etime', newValue);
+};
+
+  const handleChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    handleFormOnChange('pack_days', (typeof value === 'string' ? value.split(',') : value));
+  };
+
   return (
     <>
       <Helmet>
@@ -210,25 +321,123 @@ export default function PackagePage() {
           </Typography>
           <Button
             variant="contained"
-            startIcon={<Iconify icon="eva:plus-fill" onClick={handleOpen} />}
-          >
+            startIcon={<Iconify icon="eva:plus-fill"/>} onClick={handleOpen}>
             New Package
           </Button>
         </Stack>
 
         <Modal
-          open={open}
+          open={openm}
           onClose={handleClose}
           aria-labelledby="modal-modal-title"
           aria-describedby="modal-modal-description"
         >
-          <Box sx={style}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
+          <Box sx={style} position="absolute" >
+            <Typography id="modal-modal-title" variant="h6" component="h2" mb={1} sx={{position:'sticky'}}>
               Add Package
             </Typography>
-            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-              Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-            </Typography>
+            <Divider style={{width:'100%'}}/>
+
+            <Box style={{maxHeight: 500, overflow: 'auto', width: '100%'}} display="flex" flexDirection="column" justifyContent="center" alignItems="center">
+              <Stack spacing={4} mt={5} mb={5} sx={{ width: '80%' }} >
+                <FormControl size="small">
+                  <InputLabel id="demo-simple-select-label">Package Type</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    label="Package Type"
+                    value={packageForm.pack_type} onChange={e=>{handleFormOnChange('pack_type',e.target.value)}}
+                  >
+                    <MenuItem value={"Gold"}>Gold</MenuItem>
+                    <MenuItem value={"Silver"}>Silver</MenuItem>
+                    <MenuItem value={"Economic"}>Economic</MenuItem>
+                  </Select>
+                </FormControl>
+                <FormControl size="small">
+                  <InputLabel id="demo-simple-select-label">Test Title</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    label="Test Title" 
+                    value={packageForm.test_title} onChange={e=>{handleFormOnChange('test_title',e.target.value)}}
+                  >
+                    <MenuItem value={"IELTS"}>IELTS</MenuItem>
+                    <MenuItem value={"ACT"}>ACT</MenuItem>
+                    <MenuItem value={"SAT"}>SAT</MenuItem>
+                    <MenuItem value={"TOEFL"}>TOEFL</MenuItem>
+                    <MenuItem value={"TOEIC"}>TOEIC</MenuItem>
+                  </Select>
+                </FormControl>
+                <FormControl size='small'>
+                  <InputLabel htmlFor="outlined-adornment-amount">Package Price</InputLabel>
+                  <OutlinedInput
+                    id="outlined-adornment-amount"
+                    startAdornment={<InputAdornment position="start">MAD</InputAdornment>}
+                    label="Package Price"
+                    value={packageForm.pack_price} onChange={e=>{handleFormOnChange('pack_price',e.target.value)}}
+                  />
+                  </FormControl>
+                  <TextField
+                    id="outlined-number"
+                    label="Number of Sessions"
+                    type="number" size='small'
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    value={packageForm.pack_n_session} onChange={e=>{handleFormOnChange('pack_n_session',e.target.value)}}
+                  />
+                  <FormControl size='small'>
+                    <InputLabel id="demo-multiple-checkbox-label">Days</InputLabel>
+                    <Select
+                      labelId="demo-multiple-checkbox-label"
+                      id="demo-multiple-checkbox"
+                      multiple
+                      value={packageForm.pack_days}
+                      onChange={handleChange}
+                      input={<OutlinedInput label="Days" />}
+                      renderValue={(selected) => selected.join(', ')}
+                      MenuProps={MenuProps}
+                    >
+                      {days.map((day) => (
+                        <MenuItem key={day} value={day}>
+                          <Checkbox checked={packageForm.pack_days.indexOf(day) > -1} />
+                          <ListItemText primary={day} />
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DesktopDatePicker
+                        label="Start Date"
+                        inputFormat="MM/DD/YYYY"
+                        value={packageForm.pack_sdate}
+                        onChange={handleSdateChange}
+                        renderInput={(params) => <TextField {...params} />}
+                      />
+                      <DesktopDatePicker
+                        label="End Date"
+                        inputFormat="MM/DD/YYYY"
+                        value={packageForm.pack_edate}
+                        onChange={handleEdateChange}
+                        renderInput={(params) => <TextField {...params} />}
+                      />
+                      <TimePicker
+                        label="Start Time"
+                        value={packageForm.pack_stime}
+                        onChange={handleStimeChange}
+                        renderInput={(params) => <TextField {...params} />}
+                      />
+                      <TimePicker
+                        label="End Time"
+                        value={packageForm.pack_etime}
+                        onChange={handleEtimeChange}
+                        renderInput={(params) => <TextField {...params} />}
+                      />
+                    </LocalizationProvider>
+                </Stack>
+            <Button variant="contained" startIcon={<CheckIcon />} style={{width:'50%'}} onClick={addPackage}>Save</Button>
+            </Box>
+            
           </Box>
         </Modal>
 

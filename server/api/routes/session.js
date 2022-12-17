@@ -34,7 +34,7 @@ router.get("/", async(req,res)=>{
 // get a session
 router.get("/:id", async(req,res)=>{
     try {
-        const sess_id = req.params.id;
+        const {sess_id} = req.params.id;
         const session = await pool.query("SELECT* FROM session WHERE sess_id = $1", [sess_id]);
         res.json(session.rows);
     } catch (err) {
@@ -44,7 +44,7 @@ router.get("/:id", async(req,res)=>{
 //update a session
 router.put("/:sess_id", async(req,res)=> {
     try {
-      const sess_id= req.params;
+      const {sess_id}= req.params;
       const {sess_description, sess_date, sess_link, duration, user_id} = req.body;
       const updateSession = await pool.query("UPDATE session SET (sess_description = $1, sess_date =$2, sess_link =$3, duration=$4, user_id=$5) WHERE sess_id = $6", [sess_description, sess_date, sess_link, duration, user_id , sess_id]);
       res.json("Session was updated successfully");
@@ -55,7 +55,7 @@ router.put("/:sess_id", async(req,res)=> {
 // delete a session
 router.delete("/:sess_id", async(req,res)=>{
     try {
-       const sess_id = req.params;
+       const {sess_id} = req.params;
        const deleteSession = await pool.query("DELETE FROM session WHERE sess_id= $1", [sess_id]);
        res.json("Session was deleted successfully");
     } catch (err) {
