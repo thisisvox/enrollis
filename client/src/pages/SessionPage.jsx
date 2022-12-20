@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { filter } from "lodash";
 import { sentenceCase } from "change-case";
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 // @mui
 import {
   Card,
@@ -92,6 +93,7 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function sessionPage() {
+  const location = useLocation();
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -100,12 +102,25 @@ export default function sessionPage() {
   const getSessions = async () => {
     try {
       const response = await fetch("http://164.92.200.193:5000/api/session");
-      const jsonData = await response.json();
+      let jsonData = await response.json();
+      if (location.state?.pack_id) {
+        jsonData = jsonData.filter((session) => {
+          return session.pack_id === location.state.pack_id;
+        });
+      }
       setSessions(jsonData);
     } catch (error) {
       console.error(error.message);
     }
   };
+  const showHandouts = async (id) => {
+    try {
+      setOpen(false);
+      navigate("/handout", { state: { sess_id: id } });
+    } catch (error) {
+      console.error(error.message);
+    }
+  }; 
   useEffect(() => {
     getSessions();
   }, []);
@@ -122,6 +137,8 @@ export default function sessionPage() {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
+  const [selectedRow, setSelectedRow] = useState({});
+
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
   };
@@ -129,6 +146,12 @@ export default function sessionPage() {
   const handleCloseMenu = () => {
     setOpen(null);
   };
+
+  const handleTest = (event, row) => {
+    handleOpenMenu(event);
+    setSelectedRow(row);
+  };
+
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -274,19 +297,15 @@ export default function sessionPage() {
                      
 
                       <TableCell align="left">
-                        {session.link}
+                        {session.sess_link}
                       </TableCell>
                       <TableCell align="center">{session.duration}</TableCell>
                       
 
                       <TableCell align="right">
-                        <IconButton
-                          size="large"
-                          color="inherit"
-                          onClick={handleOpenMenu}
-                        >
-                          <Iconify icon={"eva:more-vertical-fill"} />
-                        </IconButton>
+                      <IconButton size="large" color="inherit" onClick={(event) => handleTest(event, session)}>
+                            <Iconify icon={'eva:more-vertical-fill'} />
+                          </IconButton>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -355,20 +374,19 @@ export default function sessionPage() {
           },
         }}
       >
-        <MenuItem>
-          <form action="/sessions" class="inline">
-          <Button variant="contained" href="/home">View Handouts</Button>
-          </form>
+        <MenuItem onClick= {() => showHandouts(selectedRow.sess_id)}>  
+          <Iconify icon={'eva:eye-outline'} sx={{ mr: 2 }} />
+          View Handouts
         </MenuItem>
 
         <MenuItem>
           <Iconify icon={"eva:edit-fill"} sx={{ mr: 2 }} />
-          Edit Session
+          Edit
         </MenuItem>
 
         <MenuItem sx={{ color: "error.main" }}>
           <Iconify icon={"eva:trash-2-outline"} sx={{ mr: 2 }} />
-          Delete Session
+          Delete
         </MenuItem>
       </Popover>
     </>

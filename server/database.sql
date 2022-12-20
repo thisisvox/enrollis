@@ -59,7 +59,8 @@ create table session (
     duration int, 
     user_id serial,
     user_type char(1) default 'T',
-    primary key(sess_id, pack_id), 
+    -- primary key(sess_id, pack_id), 
+    primary key (sess_id),
     foreign key(pack_id) references package(pack_id), 
     foreign key (user_id, user_type) references tutor(user_id, user_type)
     );
