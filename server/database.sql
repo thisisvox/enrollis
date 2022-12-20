@@ -59,7 +59,7 @@ create table session (
     duration int, 
     user_id serial,
     user_type char(1) default 'T',
-    -- primary key(sess_id, pack_id), 
+    -- primary key(sess_id, pack_id), //changed 
     primary key (sess_id),
     foreign key(pack_id) references package(pack_id), 
     foreign key (user_id, user_type) references tutor(user_id, user_type)
@@ -70,6 +70,5 @@ create table handout (
     doc_title text, 
     doc_link text, 
     sess_id serial, 
-    pack_id serial, 
-    foreign key(sess_id, pack_id) references session(sess_id, pack_id)
+    foreign key(sess_id) references session(sess_id)
     );
