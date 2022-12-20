@@ -55,7 +55,7 @@ function App() {
               <Route path="/tutors" element ={<TutorPage />}/>  
               <Route path="/packages" element ={<PackagePage />}/>
               <Route path="/students" element ={<StudentPage />}/> 
-              <Route path="/sessions" element ={<SessionPage />}/>                                                   
+              <Route path="/session" element ={<SessionPage />}/>                                                   
             </Routes>
           </Main>
         </StyledRoot>

@@ -127,7 +127,7 @@ export default function StudentPage() {
   } catch (error) {
       console.error(error.message);
   }
-  }
+  };
   const deleteStudent = async (id) => {
     try {
       setOpen(false);

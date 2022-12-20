@@ -15,7 +15,7 @@ router.post ("/", async(req,res)=>{
             sess_link, 
             duration, 
             user_id} = req.body;
-            const newSession = await pool.query("INSERT INTO session (pack_id,sess_title,sess_description,sess_date, sess_link, duration, user_id) values ($1,$2,$3,$4,$5,$6,$7 returning *", [pack_id,sess_title,sess_description,sess_date, sess_link, duration, user_id]);
+            const newSession = await pool.query("INSERT INTO session (pack_id,sess_title,sess_description,sess_date, sess_link, duration, user_id) values ($1,$2,$3,$4,$5,$6,$7) returning *", [pack_id,sess_title,sess_description,sess_date, sess_link, duration, user_id]);
             res.json(newSession.rows[0]);
     } catch (err) {
         console.error(err.message);
@@ -32,10 +32,10 @@ router.get("/", async(req,res)=>{
 })
 
 // get a session
-router.get("/:id", async(req,res)=>{
+router.get("/:pack_id", async(req,res)=>{
     try {
-        const {sess_id} = req.params.id;
-        const session = await pool.query("SELECT* FROM session WHERE sess_id = $1", [sess_id]);
+        const {pack_id} = req.params;
+        const session = await pool.query("SELECT* FROM session WHERE pack_id = $1", [pack_id]);
         res.json(session.rows);
     } catch (err) {
         console.error(err.message); 
