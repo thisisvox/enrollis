@@ -9,11 +9,10 @@ router.post ("/", async(req,res)=>{
     try {
         const {
             doc_title,
-            doc_description,
+            doc_link,
             sess_id,
-            pack_id
             } = req.body;
-            const newHandout = await pool.query("INSERT INTO handout (doc_title, doc_description, sess_id, pack_id) values ($1,$2,$3,$4) returning *", [doc_title, doc_description, sess_id, pack_id]);
+            const newHandout = await pool.query("INSERT INTO handout (doc_title, doc_link, sess_id) values ($1,$2,$3) returning *", [doc_title, doc_link, sess_id]);
             res.json(newHandout.rows[0]);
     } catch (err) {
         console.error(err.message);
@@ -43,8 +42,8 @@ router.get("/:doc_id", async(req,res)=>{
 router.put("/:doc_id", async(req,res)=> {
     try {
       const {doc_id} = req.params;
-      const {doc_title, doc_description, sess_id, pack_id} = req.body;
-      const updateHandout = await pool.query("UPDATE handout SET (doc_title = $1, doc_link =$2, sess_id =$3, pack_id=$4) WHERE doc_id = $6", [doc_title, doc_description, sess_id, pack_id, sess_id]);
+      const {doc_title, doc_link, sess_id} = req.body;
+      const updateHandout = await pool.query("UPDATE handout SET (doc_title = $1, doc_link =$2, sess_id =$3) WHERE doc_id = $6", [doc_title, doc_link, sess_id, sess_id]);
       res.json("Handout was updated successfully");
     } catch (err) {
         console.error(err.message);
