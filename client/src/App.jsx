@@ -7,6 +7,7 @@ import HomePage from "./pages/HomePage";
 import PackagePage from "./pages/PackagePage";
 import StudentPage from "./pages/StudentPage";
 import SessionPage from "./pages/SessionPage";
+import HandoutPage from "./pages/HandoutPage";
 
 
 import { useState } from "react";
@@ -55,7 +56,8 @@ function App() {
               <Route path="/tutors" element ={<TutorPage />}/>  
               <Route path="/packages" element ={<PackagePage />}/>
               <Route path="/students" element ={<StudentPage />}/> 
-              <Route path="/session" element ={<SessionPage />}/>                                                   
+              <Route path="/session" element ={<SessionPage />}/>      
+              <Route path="/handout" element ={<HandoutPage />}/>                                                                                                
             </Routes>
           </Main>
         </StyledRoot>
