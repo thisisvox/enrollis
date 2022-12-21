@@ -127,7 +127,19 @@ export default function StudentPage() {
   } catch (error) {
       console.error(error.message);
   }
-  }
+  };
+  const deleteStudent = async (id) => {
+    try {
+      setOpen(false);
+      const response = await fetch(`http://164.92.200.193:5000/api/student/S/${id}`, {
+        method: "DELETE",
+      });
+      setStudents(Students.filter(Student => Student.user_id !== id));
+      // window.location = "/tutors";
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
 
     useEffect(() => {
         getStudents();
@@ -147,6 +159,8 @@ export default function StudentPage() {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
+  const [selectedRow, setSelectedRow] = useState({});
+
   const handleChange = (newPhone) => {
     setPhone(newPhone)
   }
@@ -157,6 +171,11 @@ export default function StudentPage() {
 
   const handleCloseMenu = () => {
     setOpen(null);
+  };
+
+  const handleTest = (event, row) => {
+    handleOpenMenu(event);
+    setSelectedRow(row);
   };
 
   const handleRequestSort = (event, property) => {
@@ -295,7 +314,7 @@ export default function StudentPage() {
                         </TableCell>
 
                         <TableCell align="right">
-                          <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
+                          <IconButton size="large" color="inherit" onClick={(event) => handleTest(event, Student)}>
                             <Iconify icon={'eva:more-vertical-fill'} />
                           </IconButton>
                         </TableCell>
@@ -366,12 +385,12 @@ export default function StudentPage() {
           },
         }}
       >
-        <MenuItem>
+        <MenuItem onClick={handleOpen}> 
           <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
           Edit
         </MenuItem>
 
-        <MenuItem sx={{ color: 'error.main' }}>
+        <MenuItem sx={{ color: 'error.main' }} onClick= {() => deleteStudent(selectedRow.user_id)}>
           <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
           Delete
         </MenuItem>

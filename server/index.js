@@ -1,7 +1,6 @@
 const express = require("express")
 const cors = require("cors")
-
-
+// require('dotenv').config();
 const apirouter = require("./api/index")
 const PORT = 5000;
 const app = express();

@@ -10,6 +10,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import { useNavigate } from 'react-router-dom';
+
 // @mui
 import {
   Card,
@@ -119,6 +121,7 @@ export default function PackagePage() {
   const [openm, setOpenm] = useState(false);
   const handleOpen = () => setOpenm(true);
   const handleClose = () => setOpenm(false);
+  const navigate = useNavigate();
 
   const [packageForm, setPackageForm]= useState({
     pack_type: '', test_title: '', pack_price: '', pack_n_session: '', pack_sdate: dayjs(), pack_edate: dayjs(),  pack_days: [], pack_stime: dayjs(), pack_etime: dayjs()
@@ -145,6 +148,14 @@ export default function PackagePage() {
     }
   };
 
+  const showSessions = async (id) => {
+    try {
+      setOpen(false);
+      navigate("/session", { state: { pack_id: id } });
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
   const addPackage = async e => {
     console.log(packageForm.pack_type)
     e.preventDefault();
@@ -168,7 +179,21 @@ try {
 } catch (error) {
     console.error(error.message);
 }
-}
+};
+const deletePackage = async (id) => {
+  try {
+    setOpen(false);
+    const response = await fetch(`http://164.92.200.193:5000/api/package/${id}`, {
+      method: "DELETE",
+    });
+    setPackages(packages.filter(package1 => package1.pack_id !== id));
+    // window.location = "/tutors";
+  } catch (error) {
+    console.error(error.message);
+  }
+};
+
+
 
   useEffect(() => {
     getPackages();
@@ -187,12 +212,20 @@ try {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
+  const [selectedRow, setSelectedRow] = useState({});
+
+
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
   };
 
   const handleCloseMenu = () => {
     setOpen(null);
+  };
+
+  const handleTest = (event, row) => {
+    handleOpenMenu(event);
+    setSelectedRow(row);
   };
 
   const handleRequestSort = (event, property) => {
@@ -499,14 +532,10 @@ const handleEtimeChange = (newValue) => {
                       <TableCell align="left">{moment(package1.pack_etime).format("hh:mm A")}</TableCell>
 
                       <TableCell align="right">
-                        <IconButton
-                          size="large"
-                          color="inherit"
-                          onClick={handleOpenMenu}
-                        >
-                          <Iconify icon={"eva:more-vertical-fill"} />
-                        </IconButton>
-                      </TableCell>
+                          <IconButton size="large" color="inherit" onClick={(event) => handleTest(event, package1)}>
+                            <Iconify icon={'eva:more-vertical-fill'} />
+                          </IconButton>
+                        </TableCell>
                     </TableRow>
                   ))}
                   {emptyRows > 0 && (
@@ -574,18 +603,19 @@ const handleEtimeChange = (newValue) => {
           },
         }}
       >
-        <MenuItem>
-          <Button variant="contained" href="/sessions">View Sessions</Button>
+        <MenuItem onClick= {() => showSessions(selectedRow.pack_id)}>  
+          <Iconify icon={'eva:eye-outline'} sx={{ mr: 2 }} />
+          View Sessions
         </MenuItem>
 
-        <MenuItem>
-          <Iconify icon={"eva:edit-fill"} sx={{ mr: 2 }} />
-          Edit Pack
+        <MenuItem onClick={handleOpen}> 
+          <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
+          Edit
         </MenuItem>
 
-        <MenuItem sx={{ color: "error.main" }}>
-          <Iconify icon={"eva:trash-2-outline"} sx={{ mr: 2 }} />
-          Delete Pack
+        <MenuItem sx={{ color: 'error.main' }} onClick= {() => deletePackage(selectedRow.pack_id)}>
+          <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
+          Delete
         </MenuItem>
       </Popover>
     </>

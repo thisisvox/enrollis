@@ -99,10 +99,6 @@ export default function TutorPage() {
   const handleOpen = () => setOpenm(true);
   const handleClose = () => setOpenm(false);
 
-  const [opene, setOpene] = useState(false);
-  const handleOpenE = () => setOpene(true);
-  const handleCloseE = () => setOpene(false);
-
   const [tutors, setTutors]=useState([]);
 
   const[fname, setFname]=useState("");
@@ -276,32 +272,6 @@ try {
           </Box>
         </Modal>
 
-        <Modal
-          open={opene}
-          onClose={handleCloseE}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box sx={style}>
-            <Typography id="modal-modal-title" variant="h5" component="h2" mb={1}>
-              Edit Tutor
-            </Typography>
-            <Divider style={{width:'100%'}}/>
-            <Stack justifyContent="center" alignItems="center" spacing={3} mt={4} mb={3} >
-              <TextField
-                required id="outlined-required" label="First Name" placeholder="First Name" size='small' value={fname} onChange={e=> setFname(e.target.value)} style={{width:'80%'}}/>
-              <TextField
-                required id="outlined-required" label="Last Name" placeholder="First Name" size='small' value={lname} onChange={e=> setLname(e.target.value)} style={{width:'80%'}}
-              />
-              <TextField
-                required id="outlined-required" label="Email" placeholder="Email" size='small' value={email} onChange={e=> setEmail(e.target.value)} style={{width:'80%'}}
-              />
-              <MuiTelInput defaultCountry='MA' size='small' value={phone} onChange={handleChange} style={{width:'80%'}}/>
-            </Stack>
-            <Button variant="contained" startIcon={<CheckIcon />} onClick={addTutor} style={{width:'50%'}}>Save</Button>
-          </Box>
-        </Modal>
-
 
         <Card>
           <TutorListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
@@ -414,7 +384,7 @@ try {
           },
         }}
       >
-        <MenuItem>
+        <MenuItem onClick={handleOpen}>
           <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
           Edit
         </MenuItem>
