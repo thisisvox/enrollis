@@ -156,9 +156,9 @@ try {
         pack_sdate: packageForm.pack_sdate, 
         pack_edate: packageForm.pack_edate, 
         pack_days: packageForm.pack_days.toString(), 
-        pack_stime: moment(packageForm.pack_stime).format("h:mm:ss a"), 
-        pack_etime: moment(packageForm.pack_etime).format("h:mm:ss a")};
-    const response = await fetch ("http://localhost:5000/api/package", {
+        pack_stime: packageForm.pack_stime, 
+        pack_etime: packageForm.pack_etime};
+    const response = await fetch ("http://164.92.200.193:5000/api/package", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(body)
@@ -495,8 +495,8 @@ const handleEtimeChange = (newValue) => {
                       </TableCell>
 
                       <TableCell align="left">{package1.pack_days}</TableCell>
-                      <TableCell align="left">{package1.pack_stime}</TableCell>
-                      <TableCell align="left">{package1.pack_etime}</TableCell>
+                      <TableCell align="left">{moment(package1.pack_stime).format("hh:mm A")}</TableCell>
+                      <TableCell align="left">{moment(package1.pack_etime).format("hh:mm A")}</TableCell>
 
                       <TableCell align="right">
                         <IconButton
