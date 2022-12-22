@@ -126,16 +126,10 @@ export default function PackagePage() {
   const [packageForm, setPackageForm]= useState({
     pack_type: '', test_title: '', pack_price: '', pack_n_session: '', pack_sdate: dayjs(), pack_edate: dayjs(),  pack_days: [], pack_stime: dayjs(), pack_etime: dayjs()
   });
-  /*
-  const[type, setType]=useState("");
-  const[title, setTitle]=useState("");
-  const[price, setEmail]=useState("");
-  const[sessions, setSessions]=useState("");
-  const[sdate, setSdate]=useState("");
-  const[edate, setEdate]=useState("");
-  const[days, setDays]=useState("");
-  const[sTime, setStime]=useState("");
-  const[eTime, setEtime]=useState("");*/
+
+  const [packageEditForm, setPackageEditForm]= useState({
+    pack_type: '', test_title: '', pack_price: '', pack_n_session: '', pack_sdate: dayjs(), pack_edate: dayjs(),  pack_days: [], pack_stime: dayjs(), pack_etime: dayjs()
+  });
 
   const [packages, setPackages] = useState([]);
   const getPackages = async () => {
@@ -156,8 +150,17 @@ export default function PackagePage() {
       console.error(error.message);
     }
   };
+
+  const [openEdit, setOpenEdit] = useState(false);
+  const handleOpenEdit = () => setOpenEdit(true);
+  const handleCloseEdit = () => setOpenEdit(false);
+
+  const editFunctions = () => {
+    handleOpenEdit();
+    setPackageEditForm({pack_type: selectedRow.pack_type,test_title: selectedRow.test_title, pack_price: selectedRow.pack_price, pack_n_session: selectedRow.pack_n_session, pack_sdate: selectedRow.pack_sdate, pack_edate: selectedRow.pack_edate, pack_days: [selectedRow.pack_days], pack_stime: selectedRow.pack_stime, pack_etime: selectedRow.pack_etime})
+  }
+
   const addPackage = async e => {
-    console.log(packageForm.pack_type)
     e.preventDefault();
 try {
     const body = {pack_type: packageForm.pack_type, 
@@ -180,6 +183,32 @@ try {
     console.error(error.message);
 }
 };
+
+const editPackage = async (e,id) => {
+  console.log(packageEditForm.pack_type);
+  e.preventDefault();
+try {
+  const body = {
+      pack_type: packageEditForm.pack_type, 
+      test_title: packageEditForm.test_title, 
+      pack_price: packageEditForm.pack_price, 
+      pack_n_session: packageEditForm.pack_n_session, 
+      pack_sdate: packageEditForm.pack_sdate, 
+      pack_edate: packageEditForm.pack_edate, 
+      pack_days: packageEditForm.pack_days.toString(), 
+      pack_stime: packageEditForm.pack_stime, 
+      pack_etime: packageEditForm.pack_etime};
+  const response = await fetch (`http://164.92.200.193:5000/api/package/${id}`, {
+      method: "PUT",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(body)
+  });
+  window.location="/packages";
+} catch (error) {
+  console.error(error.message);
+}
+};
+
 const deletePackage = async (id) => {
   try {
     setOpen(false);
@@ -193,11 +222,10 @@ const deletePackage = async (id) => {
   }
 };
 
-
-
   useEffect(() => {
     getPackages();
   }, []);
+
   const [open, setOpen] = useState(false); 
 
   const [page, setPage] = useState(0);
@@ -288,7 +316,10 @@ const deletePackage = async (id) => {
 
   const handleFormOnChange = (key, value) => {
     setPackageForm({...packageForm, [key]: value})
-    console.log(packageForm)
+  }
+
+  const handleEditOnChange = (key, value) => {
+    setPackageEditForm({...packageEditForm, [key]: value})
   }
 
 const ITEM_HEIGHT = 48;
@@ -329,11 +360,36 @@ const handleEtimeChange = (newValue) => {
   handleFormOnChange('pack_etime', newValue);
 };
 
+//
+
+const EditSdateChange = (newValue) => {
+  handleEditOnChange('pack_sdate', newValue);
+};
+
+const EditEdateChange = (newValue) => {
+  handleEditOnChange('pack_edate', newValue);
+};
+
+const EditStimeChange = (newValue) => {
+  handleEditOnChange('pack_stime', newValue);
+};
+
+const EditEtimeChange = (newValue) => {
+  handleEditOnChange('pack_etime', newValue);
+};
+
   const handleChange = (event) => {
     const {
       target: { value },
     } = event;
     handleFormOnChange('pack_days', (typeof value === 'string' ? value.split(',') : value));
+  };
+
+  const handleEditChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    handleEditOnChange('pack_days', (typeof value === 'string' ? value.split(',') : value));
   };
 
   return (
@@ -474,6 +530,121 @@ const handleEtimeChange = (newValue) => {
           </Box>
         </Modal>
 
+        <Modal
+          open={openEdit}
+          onClose={handleCloseEdit}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={style} position="absolute" >
+            <Typography id="modal-modal-title" variant="h6" component="h2" mb={1} sx={{position:'sticky'}}>
+              Edit Package
+            </Typography>
+            <Divider style={{width:'100%'}}/>
+
+            <Box style={{maxHeight: 500, overflow: 'auto', width: '100%', paddingTop: 280}} display="flex" flexDirection="column" justifyContent="center" alignItems="center">
+              <Stack spacing={4} mt={5} mb={5} sx={{ width: '80%' }} >
+                <FormControl size="small">
+                  <InputLabel id="demo-simple-select-label">Package Type</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    label="Package Type"
+                    value={packageEditForm.pack_type} onChange={e=>{handleEditOnChange('pack_type',e.target.value)}}
+                  >
+                    <MenuItem value={"Gold"}>Gold</MenuItem>
+                    <MenuItem value={"Silver"}>Silver</MenuItem>
+                    <MenuItem value={"Economic"}>Economic</MenuItem>
+                  </Select>
+                </FormControl>
+                <FormControl size="small">
+                  <InputLabel id="demo-simple-select-label">Test Title</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    label="Test Title" 
+                    value={packageEditForm.test_title} onChange={e=>{handleEditOnChange('test_title',e.target.value)}}
+                  >
+                    <MenuItem value={"IELTS"}>IELTS</MenuItem>
+                    <MenuItem value={"ACT"}>ACT</MenuItem>
+                    <MenuItem value={"SAT"}>SAT</MenuItem>
+                    <MenuItem value={"TOEFL"}>TOEFL</MenuItem>
+                    <MenuItem value={"TOEIC"}>TOEIC</MenuItem>
+                  </Select>
+                </FormControl>
+                <FormControl size='small'>
+                  <InputLabel htmlFor="outlined-adornment-amount">Package Price</InputLabel>
+                  <OutlinedInput
+                    id="outlined-adornment-amount"
+                    startAdornment={<InputAdornment position="start">MAD</InputAdornment>}
+                    label="Package Price"
+                    value={packageEditForm.pack_price} onChange={e=>{handleEditOnChange('pack_price',e.target.value)}}
+                  />
+                  </FormControl>
+                  <TextField
+                    id="outlined-number"
+                    label="Number of Sessions"
+                    type="number" size='small'
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    value={packageEditForm.pack_n_session} onChange={e=>{handleEditOnChange('pack_n_session',e.target.value)}}
+                  />
+                  <FormControl size='small'>
+                    <InputLabel id="demo-multiple-checkbox-label">Days</InputLabel>
+                    <Select
+                      labelId="demo-multiple-checkbox-label"
+                      id="demo-multiple-checkbox"
+                      multiple
+                      value={packageEditForm.pack_days}
+                      onChange={handleEditChange}
+                      input={<OutlinedInput label="Days" />}
+                      renderValue={(selected) => selected.join(', ')}
+                      MenuProps={MenuProps}
+                    >
+                      {days.map((day) => (
+                        <MenuItem key={day} value={day}>
+                          <Checkbox checked={packageForm.pack_days.indexOf(day) > -1} />
+                          <ListItemText primary={day} />
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DesktopDatePicker
+                        label="Start Date"
+                        inputFormat="MM/DD/YYYY"
+                        value={packageEditForm.pack_sdate}
+                        onChange={EditSdateChange}
+                        renderInput={(params) => <TextField {...params} />}
+                      />
+                      <DesktopDatePicker
+                        label="End Date"
+                        inputFormat="MM/DD/YYYY"
+                        value={packageEditForm.pack_edate}
+                        onChange={EditEdateChange}
+                        renderInput={(params) => <TextField {...params} />}
+                      />
+                      <TimePicker
+                        label="Start Time"
+                        value={packageEditForm.pack_stime}
+                        onChange={EditStimeChange}
+                        renderInput={(params) => <TextField {...params} />}
+                      />
+                      <TimePicker
+                        label="End Time"
+                        value={packageEditForm.pack_etime}
+                        onChange={EditEtimeChange}
+                        renderInput={(params) => <TextField {...params} />}
+                      />
+                    </LocalizationProvider>
+                </Stack>
+            <Button variant="contained" startIcon={<CheckIcon />} style={{width:'50%'}} onClick={(e) => editPackage(e,selectedRow.pack_id)}>Save</Button>
+            </Box>
+            
+          </Box>
+        </Modal>
+
         <Card>
           <PackageListToolbar
             numSelected={selected.length}
@@ -608,7 +779,7 @@ const handleEtimeChange = (newValue) => {
           View Sessions
         </MenuItem>
 
-        <MenuItem onClick={handleOpen}> 
+        <MenuItem onClick={editFunctions}> 
           <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
           Edit
         </MenuItem>
