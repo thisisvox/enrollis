@@ -13,9 +13,8 @@ router.post ("/", async(req,res)=>{
             sess_description, 
             sess_date, 
             sess_link, 
-            duration, 
-            user_id} = req.body;
-            const newSession = await pool.query("INSERT INTO session (pack_id,sess_title,sess_description,sess_date, sess_link, duration, user_id) values ($1,$2,$3,$4,$5,$6,$7) returning *", [pack_id,sess_title,sess_description,sess_date, sess_link, duration, user_id]);
+            duration} = req.body;
+            const newSession = await pool.query("INSERT INTO session (pack_id,sess_title,sess_description,sess_date, sess_link, duration) values ($1,$2,$3,$4,$5,$6) returning *", [pack_id,sess_title,sess_description,sess_date, sess_link, duration]);
             res.json(newSession.rows[0]);
     } catch (err) {
         console.error(err.message);
@@ -45,8 +44,8 @@ router.get("/:pack_id", async(req,res)=>{
 router.put("/:sess_id", async(req,res)=> {
     try {
       const {sess_id}= req.params;
-      const {sess_description, sess_date, sess_link, duration, user_id} = req.body;
-      const updateSession = await pool.query("UPDATE session SET (sess_description = $1, sess_date =$2, sess_link =$3, duration=$4, user_id=$5) WHERE sess_id = $6", [sess_description, sess_date, sess_link, duration, user_id , sess_id]);
+      const {sess_description, sess_date, sess_link, duration} = req.body;
+      const updateSession = await pool.query("UPDATE session SET (sess_description = $1, sess_date =$2, sess_link =$3, duration=$4) WHERE sess_id = $5", [sess_description, sess_date, sess_link, duration, sess_id]);
       res.json("Session was updated successfully");
     } catch (err) {
         console.error(err.message);
