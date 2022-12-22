@@ -94,6 +94,21 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function StudentPage() {
+  const [Students, setStudents]=useState([]);
+    const getStudents = async () => {
+    try {
+        const response = await fetch ("http://164.92.200.193:5000/api/student");
+        const jsonData = await response.json();
+        setStudents(jsonData);
+    } catch (error) {
+        console.error(error.message);
+    }
+   }
+   useEffect(() => {
+    getStudents();
+  }, []);
+
+  //add student
   const [openm, setOpenm] = useState(false);
   const handleOpen = () => setOpenm(true);
   const handleClose = () => setOpenm(false);
@@ -104,17 +119,8 @@ export default function StudentPage() {
   const[phone, setPhone]=useState("");
   const[level, setLevel]=useState("");
 
-  const [Students, setStudents]=useState([]);
-    const getStudents = async () => {
-    try {
-        const response = await fetch ("http://164.92.200.193:5000/api/student");
-        const jsonData = await response.json();
-        setStudents(jsonData);
-    } catch (error) {
-        console.error(error.message);
-    }
-    }
-    const addStudent = async e => {
+  
+  const addStudent = async e => {
       e.preventDefault();
   try {
       const body = {user_fname: fname, user_lname: lname, user_email: email, user_phone: phone, stu_level: level};
@@ -128,6 +134,57 @@ export default function StudentPage() {
       console.error(error.message);
   }
   };
+
+  const handleChange = (newPhone) => {
+    setPhone(newPhone)
+  }
+
+  //end add
+  //edit student
+
+  const [openEdit, setOpenEdit] = useState(false);
+  const handleOpenEdit = () => setOpenEdit(true);
+  const handleCloseEdit = () => setOpenEdit(false);
+
+  const[edFname, setEdFname]=useState("");
+  const[edLname, setEdLname]=useState("");
+  const[edEmail, setEdEmail]=useState("");
+  const[edPhone, setEdPhone]=useState("");
+  const[edLevel, setEdLevel]=useState("");
+
+  const editFunctions = () => {
+    handleOpenEdit();
+    setEdFname(selectedRow.user_fname)
+    setEdLname(selectedRow.user_lname)
+    setEdEmail(selectedRow.user_email)
+    setEdPhone(selectedRow.user_phone)
+    setEdLevel(selectedRow.stu_level)
+  }
+
+  const editStudent = async (e,type,id) => {
+      e.preventDefault();
+  try {
+      const body = {
+        user_fname: edFname, user_lname: edLname, user_email: edEmail, user_phone: edPhone, stu_level: edLevel
+      };
+      const response = await fetch (`http://164.92.200.193:5000/api/student/${type}/${id}`, {
+          method: "PUT",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(body)
+      });
+      window.location="/students";
+  } catch (error) {
+      console.error(error.message);
+  }
+  }
+
+  const handleEditChange = (newPhone) => {
+    setEdPhone(newPhone)
+  }
+
+  //end edit
+
+
   const deleteStudent = async (id) => {
     try {
       setOpen(false);
@@ -141,9 +198,7 @@ export default function StudentPage() {
     }
   };
 
-    useEffect(() => {
-        getStudents();
-    }, []);
+
 
   const [open, setOpen] = useState(false);
 
@@ -161,8 +216,9 @@ export default function StudentPage() {
 
   const [selectedRow, setSelectedRow] = useState({});
 
-  const handleChange = (newPhone) => {
-    setPhone(newPhone)
+  const closeFunctions = () => {
+    handleCloseEdit();
+    handleCloseMenu();
   }
 
   const handleOpenMenu = (event) => {
@@ -270,6 +326,34 @@ export default function StudentPage() {
                 required id="outlined-required" label="Study Level" placeholder="Study Level" size='small' value={level} onChange={e=> setLevel(e.target.value)} style={{width:'80%'}}/>
             </Stack>
             <Button variant="contained" startIcon={<CheckIcon />} onClick={addStudent} style={{width:'50%'}}>Save</Button>
+          </Box>
+        </Modal>
+
+        <Modal
+          open={openEdit}
+          onClose={closeFunctions}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={style}>
+            <Typography id="modal-modal-title" variant="h5" component="h2" mb={1}>
+              Edit Student
+            </Typography>
+            <Divider style={{width:'100%'}}/>
+            <Stack justifyContent="center" alignItems="center" spacing={3} mt={4} mb={3} >
+              <TextField
+                required id="outlined-required" label="First Name" placeholder="First Name" size='small' value={edFname} onChange={e=> setEdFname(e.target.value)} style={{width:'80%'}}/>
+              <TextField
+                required id="outlined-required" label="Last Name" placeholder="First Name" size='small' value={edLname} onChange={e=> setEdLname(e.target.value)} style={{width:'80%'}}
+              />
+              <TextField
+                required id="outlined-required" label="Email" placeholder="Email" size='small' value={edEmail} onChange={e=> setEdEmail(e.target.value)} style={{width:'80%'}}
+              />
+              <MuiTelInput defaultCountry='MA' size='small' value={edPhone} onChange={handleEditChange} style={{width:'80%'}}/>
+              <TextField
+                required id="outlined-required" label="Study Level" placeholder="Study Level" size='small' value={edLevel} onChange={e=> setEdLevel(e.target.value)} style={{width:'80%'}}/>
+            </Stack>
+            <Button variant="contained" startIcon={<CheckIcon />} onClick={(e) => editStudent(e, selectedRow.user_type, selectedRow.user_id)} style={{width:'50%'}}>Save</Button>
           </Box>
         </Modal>
 
@@ -385,7 +469,7 @@ export default function StudentPage() {
           },
         }}
       >
-        <MenuItem onClick={handleOpen}> 
+        <MenuItem onClick={editFunctions}> 
           <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
           Edit
         </MenuItem>

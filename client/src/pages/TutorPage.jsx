@@ -95,19 +95,9 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function TutorPage() {
-  const [openm, setOpenm] = useState(false);
-  const handleOpen = () => setOpenm(true);
-  const handleClose = () => setOpenm(false);
-
-  const [tutors, setTutors]=useState([]);
-
-  const[fname, setFname]=useState("");
-  const[lname, setLname]=useState("");
-  const[email, setEmail]=useState("");
-  const[phone, setPhone]=useState("");
   
-
-    const getTutors = async () => {
+  const [tutors, setTutors]=useState([]);
+  const getTutors = async () => {
     try {
         const response = await fetch ("http://164.92.200.193:5000/api/tutor");
         const jsonData = await response.json();
@@ -116,42 +106,88 @@ export default function TutorPage() {
         console.error(error.message);
     }
     }
-/*
-    const editTutor = async (e) => {
+
+  useEffect(() => {
+      getTutors();
+  }, []);
+
+  //add tutor
+  const [openm, setOpenm] = useState(false);
+  const handleOpen = () => setOpenm(true);
+  const handleClose = () => setOpenm(false);
+
+  const[fname, setFname]=useState("");
+  const[lname, setLname]=useState("");
+  const[email, setEmail]=useState("");
+  const[phone, setPhone]=useState("");
+  
+  const addTutor = async e => {
+    e.preventDefault();
+  try {
+      const body = {user_fname: fname, user_lname: lname, user_email: email, user_phone: phone};
+      const response = await fetch ("http://164.92.200.193:5000/api/tutor", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(body)
+      });
+      window.location="/tutors";
+  } catch (error) {
+      console.error(error.message);
+  }
+  }
+
+  const handleChange = (newPhone) => {
+    setPhone(newPhone)
+  }
+  //end add
+  //edit tutor
+
+  const [openEdit, setOpenEdit] = useState(false);
+  const handleOpenEdit = () => setOpenEdit(true);
+  const handleCloseEdit = () => setOpenEdit(false);
+
+  const[edFname, setEdFname]=useState("");
+  const[edLname, setEdLname]=useState("");
+  const[edEmail, setEdEmail]=useState("");
+  const[edPhone, setEdPhone]=useState("");
+  const[workHrs, setWorkHrs]=useState("");
+
+  const editFunctions = () => {
+    handleOpenEdit();
+    setEdFname(selectedRow.user_fname)
+    setEdLname(selectedRow.user_lname)
+    setEdEmail(selectedRow.user_email)
+    setEdPhone(selectedRow.user_phone)
+    setWorkHrs(selectedRow.tutor_worked_hrs)
+  }
+
+  const editTutor = async (e,type,id) => {
       e.preventDefault();
   try {
-      const body = {user_fname, 
-        user_lname, 
-        user_email, 
-        user_phone,
-        tutor_worked_hrs};
-      const response = await fetch (`http://164.92.200.193:5000/api/tutor/:${tutor.user_type}/:${tutor.user_id}`, {
+      const body = {
+        user_fname: edFname, user_lname: edLname, user_email: edEmail, user_phone: edPhone, tutor_worked_hrs: workHrs
+      };
+      const response = await fetch (`http://164.92.200.193:5000/api/tutor/${type}/${id}`, {
           method: "PUT",
           headers: {"Content-Type": "application/json"},
           body: JSON.stringify(body)
       });
-      window.location="/";
+      window.location="/tutors";
   } catch (error) {
       console.error(error.message);
   }
-  }*/
-  const addTutor = async e => {
-    e.preventDefault();
-try {
-    const body = {user_fname: fname, user_lname: lname, user_email: email, user_phone: phone};
-    const response = await fetch ("http://164.92.200.193:5000/api/tutor", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(body)
-    });
-    window.location="/tutors";
-} catch (error) {
-    console.error(error.message);
-}
-}
-    useEffect(() => {
-        getTutors();
-    }, []);
+  }
+
+  const handleEditChange = (newPhone) => {
+    setEdPhone(newPhone)
+  }
+
+  const handleTutor = (event, row) => {
+    handleOpenMenu(event);
+    setSelectedRow(row);
+  };
+
+  //end edit
 
   const [open, setOpen] = useState(null);
 
@@ -167,8 +203,11 @@ try {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const handleChange = (newPhone) => {
-    setPhone(newPhone)
+  const [selectedRow, setSelectedRow] = useState({});
+
+  const closeFunctions = () => {
+    handleCloseEdit();
+    handleCloseMenu();
   }
 
   const handleOpenMenu = (event) => {
@@ -272,6 +311,42 @@ try {
           </Box>
         </Modal>
 
+        <Modal
+          open={openEdit}
+          onClose={closeFunctions}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={style}>
+            <Typography id="modal-modal-title" variant="h5" component="h2" mb={1}>
+              Edit Tutor
+            </Typography>
+            <Divider style={{width:'100%'}}/>
+            <Stack justifyContent="center" alignItems="center" spacing={3} mt={4} mb={3} >
+              <TextField
+                required id="outlined-required" label="First Name" placeholder="First Name" size='small' value={edFname} onChange={e=> setEdFname(e.target.value)} style={{width:'80%'}}/>
+              <TextField
+                required id="outlined-required" label="Last Name" placeholder="First Name" size='small' value={edLname} onChange={e=> setEdLname(e.target.value)} style={{width:'80%'}}
+              />
+              <TextField
+                required id="outlined-required" label="Email" placeholder="Email" size='small' value={edEmail} onChange={e=> setEdEmail(e.target.value)} style={{width:'80%'}}
+              />
+              <MuiTelInput defaultCountry='MA' size='small' value={edPhone} onChange={handleEditChange} style={{width:'80%'}}/>
+              <TextField
+                    id="outlined-number"
+                    label="Worked Hours"
+                    type="number" size='small'
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    value={workHrs} onChange={e=>{setWorkHrs(e.target.value)}}
+                  />
+
+            </Stack>
+            <Button variant="contained" startIcon={<CheckIcon />} onClick={(e) => editTutor(e,selectedRow.user_type,selectedRow.user_id)} style={{width:'50%'}}>Save</Button>
+          </Box>
+        </Modal>        
+
 
         <Card>
           <TutorListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
@@ -311,9 +386,8 @@ try {
                         <TableCell align="center">
                           {tutor.tutor_worked_hrs}
                         </TableCell>
-
                         <TableCell align="right">
-                          <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
+                          <IconButton size="large" color="inherit" onClick={(event) => handleTutor(event, tutor)}>
                             <Iconify icon={'eva:more-vertical-fill'} />
                           </IconButton>
                         </TableCell>
@@ -384,7 +458,7 @@ try {
           },
         }}
       >
-        <MenuItem onClick={handleOpen}>
+        <MenuItem onClick={editFunctions}>
           <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
           Edit
         </MenuItem>

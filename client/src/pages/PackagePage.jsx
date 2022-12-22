@@ -118,19 +118,9 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function PackagePage() {
-  const [openm, setOpenm] = useState(false);
-  const handleOpen = () => setOpenm(true);
-  const handleClose = () => setOpenm(false);
   const navigate = useNavigate();
 
-  const [packageForm, setPackageForm]= useState({
-    pack_type: '', test_title: '', pack_price: '', pack_n_session: '', pack_sdate: dayjs(), pack_edate: dayjs(),  pack_days: [], pack_stime: dayjs(), pack_etime: dayjs()
-  });
-
-  const [packageEditForm, setPackageEditForm]= useState({
-    pack_type: '', test_title: '', pack_price: '', pack_n_session: '', pack_sdate: dayjs(), pack_edate: dayjs(),  pack_days: [], pack_stime: dayjs(), pack_etime: dayjs()
-  });
-
+  //get packages
   const [packages, setPackages] = useState([]);
   const getPackages = async () => {
     try {
@@ -142,6 +132,141 @@ export default function PackagePage() {
     }
   };
 
+  useEffect(() => {
+    getPackages();
+  }, []);
+
+  //add package
+  const [openm, setOpenm] = useState(false);
+  const handleOpen = () => setOpenm(true);
+  const handleClose = () => setOpenm(false);
+
+  const [packageForm, setPackageForm]= useState({
+    pack_type: '', test_title: '', pack_price: '', pack_n_session: '', pack_sdate: dayjs(), pack_edate: dayjs(),  pack_days: [], pack_stime: dayjs(), pack_etime: dayjs()
+  });
+
+  const addPackage = async e => {
+      e.preventDefault();
+  try {
+      const body = {pack_type: packageForm.pack_type, 
+          test_title: packageForm.test_title, 
+          pack_price: packageForm.pack_price, 
+          pack_n_session: packageForm.pack_n_session, 
+          pack_sdate: packageForm.pack_sdate, 
+          pack_edate: packageForm.pack_edate, 
+          pack_days: packageForm.pack_days.toString(), 
+          pack_stime: packageForm.pack_stime, 
+          pack_etime: packageForm.pack_etime};
+      const response = await fetch ("http://164.92.200.193:5000/api/package", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(body)
+      });
+      console.log(packageForm.pack_price)
+          window.location="/packages";
+      } catch (error) {
+          console.error(error.message);
+      }
+      };
+
+      const handleFormOnChange = (key, value) => {
+        setPackageForm({...packageForm, [key]: value})
+      }
+
+      const handleSdateChange = (newValue) => {
+        handleFormOnChange('pack_sdate', newValue);
+      };
+      
+      const handleEdateChange = (newValue) => {
+        handleFormOnChange('pack_edate', newValue);
+      };
+      
+      const handleStimeChange = (newValue) => {
+        handleFormOnChange('pack_stime', newValue);
+      };
+      
+      const handleEtimeChange = (newValue) => {
+        handleFormOnChange('pack_etime', newValue);
+      };  
+      
+  
+    const handleChange = (event) => {
+      const {
+        target: { value },
+      } = event;
+      handleFormOnChange('pack_days', (typeof value === 'string' ? value.split(',') : value));
+    };
+
+  //end add
+  //edit package
+
+  const [openEdit, setOpenEdit] = useState(false);
+  const handleOpenEdit = () => setOpenEdit(true);
+  const handleCloseEdit = () => setOpenEdit(false);
+  
+  const [packageEditForm, setPackageEditForm]= useState({
+    pack_type: '', test_title: '', pack_price: '', pack_n_session: '', pack_sdate: dayjs(), pack_edate: dayjs(),  pack_days: [], pack_stime: dayjs(), pack_etime: dayjs()
+  });
+
+  const editFunctions = () => {
+    handleOpenEdit();
+    setPackageEditForm({pack_type: selectedRow.pack_type,test_title: selectedRow.test_title, pack_price: selectedRow.pack_price, pack_n_session: selectedRow.pack_n_session, pack_sdate: selectedRow.pack_sdate, pack_edate: selectedRow.pack_edate, pack_days: selectedRow.pack_days.split(','), pack_stime: selectedRow.pack_stime, pack_etime: selectedRow.pack_etime})
+  }
+
+  const editPackage = async (e,id) => {
+    e.preventDefault();
+  try {
+    const body = {
+        pack_type: packageEditForm.pack_type, 
+        test_title: packageEditForm.test_title, 
+        pack_price: packageEditForm.pack_price, 
+        pack_n_session: packageEditForm.pack_n_session, 
+        pack_sdate: packageEditForm.pack_sdate, 
+        pack_edate: packageEditForm.pack_edate, 
+        pack_days: packageEditForm.pack_days.toString(), 
+        pack_stime: packageEditForm.pack_stime, 
+        pack_etime: packageEditForm.pack_etime};
+    const response = await fetch (`http://164.92.200.193:5000/api/package/${id}`, {
+        method: "PUT",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(body)
+    });
+    window.location="/packages";
+  } catch (error) {
+    console.error(error.message);
+  }
+  };
+
+  const handleEditOnChange = (key, value) => {
+    setPackageEditForm({...packageEditForm, [key]: value})
+  }
+
+  const EditSdateChange = (newValue) => {
+  handleEditOnChange('pack_sdate', newValue);
+  };
+
+  const EditEdateChange = (newValue) => {
+    handleEditOnChange('pack_edate', newValue);
+  };
+
+  const EditStimeChange = (newValue) => {
+    handleEditOnChange('pack_stime', newValue);
+  };
+
+  const EditEtimeChange = (newValue) => {
+    handleEditOnChange('pack_etime', newValue);
+  };
+
+  const handleEditChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    handleEditOnChange('pack_days', (typeof value === 'string' ? value.split(',') : value));
+  };
+
+//end edit
+
+  
   const showSessions = async (id) => {
     try {
       setOpen(false);
@@ -151,63 +276,8 @@ export default function PackagePage() {
     }
   };
 
-  const [openEdit, setOpenEdit] = useState(false);
-  const handleOpenEdit = () => setOpenEdit(true);
-  const handleCloseEdit = () => setOpenEdit(false);
+  
 
-  const editFunctions = () => {
-    handleOpenEdit();
-    setPackageEditForm({pack_type: selectedRow.pack_type,test_title: selectedRow.test_title, pack_price: selectedRow.pack_price, pack_n_session: selectedRow.pack_n_session, pack_sdate: selectedRow.pack_sdate, pack_edate: selectedRow.pack_edate, pack_days: [selectedRow.pack_days], pack_stime: selectedRow.pack_stime, pack_etime: selectedRow.pack_etime})
-  }
-
-  const addPackage = async e => {
-    e.preventDefault();
-try {
-    const body = {pack_type: packageForm.pack_type, 
-        test_title: packageForm.test_title, 
-        pack_price: packageForm.pack_price, 
-        pack_n_session: packageForm.pack_n_session, 
-        pack_sdate: packageForm.pack_sdate, 
-        pack_edate: packageForm.pack_edate, 
-        pack_days: packageForm.pack_days.toString(), 
-        pack_stime: packageForm.pack_stime, 
-        pack_etime: packageForm.pack_etime};
-    const response = await fetch ("http://164.92.200.193:5000/api/package", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(body)
-    });
-    console.log(packageForm.pack_price)
-    window.location="/packages";
-} catch (error) {
-    console.error(error.message);
-}
-};
-
-const editPackage = async (e,id) => {
-  console.log(packageEditForm.pack_type);
-  e.preventDefault();
-try {
-  const body = {
-      pack_type: packageEditForm.pack_type, 
-      test_title: packageEditForm.test_title, 
-      pack_price: packageEditForm.pack_price, 
-      pack_n_session: packageEditForm.pack_n_session, 
-      pack_sdate: packageEditForm.pack_sdate, 
-      pack_edate: packageEditForm.pack_edate, 
-      pack_days: packageEditForm.pack_days.toString(), 
-      pack_stime: packageEditForm.pack_stime, 
-      pack_etime: packageEditForm.pack_etime};
-  const response = await fetch (`http://164.92.200.193:5000/api/package/${id}`, {
-      method: "PUT",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify(body)
-  });
-  window.location="/packages";
-} catch (error) {
-  console.error(error.message);
-}
-};
 
 const deletePackage = async (id) => {
   try {
@@ -222,9 +292,6 @@ const deletePackage = async (id) => {
   }
 };
 
-  useEffect(() => {
-    getPackages();
-  }, []);
 
   const [open, setOpen] = useState(false); 
 
@@ -242,6 +309,10 @@ const deletePackage = async (id) => {
 
   const [selectedRow, setSelectedRow] = useState({});
 
+  const closeFunctions = () => {
+    handleCloseEdit();
+    handleCloseMenu();
+  }
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -314,13 +385,9 @@ const deletePackage = async (id) => {
 
   const isNotFound = !filteredUsers.length && !!filterName;
 
-  const handleFormOnChange = (key, value) => {
-    setPackageForm({...packageForm, [key]: value})
-  }
+  
 
-  const handleEditOnChange = (key, value) => {
-    setPackageEditForm({...packageEditForm, [key]: value})
-  }
+  
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -344,53 +411,9 @@ const days = [
 ];
   
 
-const handleSdateChange = (newValue) => {
-  handleFormOnChange('pack_sdate', newValue);
-};
 
-const handleEdateChange = (newValue) => {
-  handleFormOnChange('pack_edate', newValue);
-};
 
-const handleStimeChange = (newValue) => {
-  handleFormOnChange('pack_stime', newValue);
-};
-
-const handleEtimeChange = (newValue) => {
-  handleFormOnChange('pack_etime', newValue);
-};
-
-//
-
-const EditSdateChange = (newValue) => {
-  handleEditOnChange('pack_sdate', newValue);
-};
-
-const EditEdateChange = (newValue) => {
-  handleEditOnChange('pack_edate', newValue);
-};
-
-const EditStimeChange = (newValue) => {
-  handleEditOnChange('pack_stime', newValue);
-};
-
-const EditEtimeChange = (newValue) => {
-  handleEditOnChange('pack_etime', newValue);
-};
-
-  const handleChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-    handleFormOnChange('pack_days', (typeof value === 'string' ? value.split(',') : value));
-  };
-
-  const handleEditChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-    handleEditOnChange('pack_days', (typeof value === 'string' ? value.split(',') : value));
-  };
+  
 
   return (
     <>
@@ -532,7 +555,7 @@ const EditEtimeChange = (newValue) => {
 
         <Modal
           open={openEdit}
-          onClose={handleCloseEdit}
+          onClose={closeFunctions}
           aria-labelledby="modal-modal-title"
           aria-describedby="modal-modal-description"
         >
@@ -604,7 +627,7 @@ const EditEtimeChange = (newValue) => {
                     >
                       {days.map((day) => (
                         <MenuItem key={day} value={day}>
-                          <Checkbox checked={packageForm.pack_days.indexOf(day) > -1} />
+                          <Checkbox checked={(packageEditForm.pack_days).indexOf(day) > -1} />
                           <ListItemText primary={day} />
                         </MenuItem>
                       ))}
