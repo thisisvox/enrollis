@@ -321,7 +321,7 @@ export default function StudentPage() {
               <TextField
                 required id="outlined-required" label="Email" placeholder="Email" size='small' value={email} onChange={e=> setEmail(e.target.value)} style={{width:'80%'}}
               />
-              <MuiTelInput defaultCountry='MA' size='small' value={phone} onChange={handleChange} style={{width:'80%'}}/>
+              <MuiTelInput defaultCountry='MA' size='small'  value={phone} onChange={handleChange} style={{width:'80%'}}/>
               <TextField
                 required id="outlined-required" label="Study Level" placeholder="Study Level" size='small' value={level} onChange={e=> setLevel(e.target.value)} style={{width:'80%'}}/>
             </Stack>
@@ -349,7 +349,7 @@ export default function StudentPage() {
               <TextField
                 required id="outlined-required" label="Email" placeholder="Email" size='small' value={edEmail} onChange={e=> setEdEmail(e.target.value)} style={{width:'80%'}}
               />
-              <MuiTelInput defaultCountry='MA' size='small' value={edPhone} onChange={handleEditChange} style={{width:'80%'}}/>
+              <MuiTelInput defaultCountry='MA' size='small' label="Phone Number" value={edPhone} onChange={handleEditChange} style={{width:'80%'}}/>
               <TextField
                 required id="outlined-required" label="Study Level" placeholder="Study Level" size='small' value={edLevel} onChange={e=> setEdLevel(e.target.value)} style={{width:'80%'}}/>
             </Stack>

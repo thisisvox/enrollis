@@ -16,6 +16,7 @@ import { HelmetProvider } from "react-helmet-async";
 // @mui
 import { styled } from "@mui/material/styles";
 import { Route, Routes } from "react-router-dom";
+import ProfilePage from "./pages/ProfilePage";
 const APP_BAR_MOBILE = 64;
 const APP_BAR_DESKTOP = 92;
 
@@ -56,7 +57,8 @@ function App() {
               <Route path="/tutors" element ={<TutorPage />}/>  
               <Route path="/packages" element ={<PackagePage />}/>
               <Route path="/students" element ={<StudentPage />}/> 
-              <Route path="/session" element ={<SessionPage />}/>      
+              <Route path="/session" element ={<SessionPage />}/>   
+              <Route path="/profile" element ={<ProfilePage />}/>    
               <Route path="/handout" element ={<HandoutPage />}/>                                                                                                
             </Routes>
           </Main>

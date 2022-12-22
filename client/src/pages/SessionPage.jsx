@@ -51,8 +51,7 @@ const TABLE_HEAD = [
   { id: "role", label: "Date", alignRight: false },
   { id: "isVerified", label: "Link", alignRight: false },
   { id: "sdate", label: "Duration", alignRight: false },
-  { id: "tutor", label: "Tutor ID", alignRight: false },
-  { id: "pack", label: "Pack ID", alignRight: false },
+  { id: "pack", label: "Package Id", alignRight: false },
   { id: "" },
 ];
 const style = {
@@ -325,7 +324,6 @@ export default function sessionPage() {
                         {session.sess_link}
                       </TableCell>
                       <TableCell align="center">{session.duration}</TableCell>
-                      <TableCell align="center">{session.user_id}</TableCell>
                       <TableCell align="center">{session.pack_id}</TableCell>
                       
 

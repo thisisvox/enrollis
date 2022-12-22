@@ -64,7 +64,10 @@ const TABLE_HEAD = [
   { id: "days", label: "Days", alignRight: false },
   { id: "stime", label: "Start Time", alignRight: false },
   { id: "etime", label: "End Time", alignRight: false },
-  { id: "" },
+  { id: "studEnrolled",  label: "Enrolled", alignRight: false },
+  { id: "tutor",  label: "Tutor Id", alignRight: false },
+  { id: "", },
+
 ];
 const style = {
   position: 'absolute',
@@ -120,6 +123,23 @@ function applySortFilter(array, comparator, query) {
 export default function PackagePage() {
   const navigate = useNavigate();
 
+  //get tutors
+  const [tutors, setTutors]=useState([]);
+  const getTutors = async () => {
+    try {
+        const response = await fetch ("http://164.92.200.193:5000/api/tutor");
+        const jsonData = await response.json();
+        setTutors(jsonData);
+    } catch (error) {
+        console.error(error.message);
+    }
+    }
+
+  useEffect(() => {
+      getTutors();
+  }, []);
+
+
   //get packages
   const [packages, setPackages] = useState([]);
   const getPackages = async () => {
@@ -142,7 +162,7 @@ export default function PackagePage() {
   const handleClose = () => setOpenm(false);
 
   const [packageForm, setPackageForm]= useState({
-    pack_type: '', test_title: '', pack_price: '', pack_n_session: '', pack_sdate: dayjs(), pack_edate: dayjs(),  pack_days: [], pack_stime: dayjs(), pack_etime: dayjs()
+    pack_type: '', test_title: '', pack_price: '', pack_n_session: '', pack_sdate: dayjs(), pack_edate: dayjs(),  pack_days: [], pack_stime: dayjs(), pack_etime: dayjs(), user_id: '',
   });
 
   const addPackage = async e => {
@@ -156,13 +176,14 @@ export default function PackagePage() {
           pack_edate: packageForm.pack_edate, 
           pack_days: packageForm.pack_days.toString(), 
           pack_stime: packageForm.pack_stime, 
-          pack_etime: packageForm.pack_etime};
-      const response = await fetch ("http://164.92.200.193:5000/api/package", {
+          pack_etime: packageForm.pack_etime,
+          user_id: packageForm.user_id,
+        };
+      const response = await fetch ("http://localhost:5000/api/package", {
           method: "POST",
           headers: {"Content-Type": "application/json"},
           body: JSON.stringify(body)
       });
-      console.log(packageForm.pack_price)
           window.location="/packages";
       } catch (error) {
           console.error(error.message);
@@ -210,7 +231,7 @@ export default function PackagePage() {
 
   const editFunctions = () => {
     handleOpenEdit();
-    setPackageEditForm({pack_type: selectedRow.pack_type,test_title: selectedRow.test_title, pack_price: selectedRow.pack_price, pack_n_session: selectedRow.pack_n_session, pack_sdate: selectedRow.pack_sdate, pack_edate: selectedRow.pack_edate, pack_days: selectedRow.pack_days.split(','), pack_stime: selectedRow.pack_stime, pack_etime: selectedRow.pack_etime})
+    setPackageEditForm({pack_type: selectedRow.pack_type,test_title: selectedRow.test_title, pack_price: selectedRow.pack_price, pack_n_session: selectedRow.pack_n_session, pack_sdate: selectedRow.pack_sdate, pack_edate: selectedRow.pack_edate, pack_days: selectedRow.pack_days.split(','), pack_stime: selectedRow.pack_stime, pack_etime: selectedRow.pack_etime, user_id: selectedRow.user_id})
   }
 
   const editPackage = async (e,id) => {
@@ -225,8 +246,10 @@ export default function PackagePage() {
         pack_edate: packageEditForm.pack_edate, 
         pack_days: packageEditForm.pack_days.toString(), 
         pack_stime: packageEditForm.pack_stime, 
-        pack_etime: packageEditForm.pack_etime};
-    const response = await fetch (`http://164.92.200.193:5000/api/package/${id}`, {
+        pack_etime: packageEditForm.pack_etime,
+        user_id: packageEditForm.user_id
+      };
+    const response = await fetch (`http://localhost:5000/api/package/${id}`, {
         method: "PUT",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(body)
@@ -411,10 +434,6 @@ const days = [
 ];
   
 
-
-
-  
-
   return (
     <>
       <Helmet>
@@ -450,7 +469,7 @@ const days = [
             </Typography>
             <Divider style={{width:'100%'}}/>
 
-            <Box style={{maxHeight: 500, overflow: 'auto', width: '100%', paddingTop: 280}} display="flex" flexDirection="column" justifyContent="center" alignItems="center">
+            <Box style={{maxHeight: 500, overflow: 'auto', width: '100%', paddingTop: 360}} display="flex" flexDirection="column" justifyContent="center" alignItems="center">
               <Stack spacing={4} mt={5} mb={5} sx={{ width: '80%' }} >
                 <FormControl size="small">
                   <InputLabel id="demo-simple-select-label">Package Type</InputLabel>
@@ -518,6 +537,19 @@ const days = [
                       ))}
                     </Select>
                   </FormControl>
+                  <FormControl size="small">
+                      <InputLabel id="demo-simple-select-label">Tutor</InputLabel>
+                      <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        label="Package Type"
+                        value={packageForm.user_id} onChange={e=>{handleFormOnChange('user_id',e.target.value)}}
+                      >
+                         {tutors.map((tutor) => (
+                        <MenuItem value={tutor.user_id}>{tutor.user_fname} {tutor.user_lname}</MenuItem>
+                      ))}
+                      </Select>
+                    </FormControl>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DesktopDatePicker
                         label="Start Date"
@@ -565,7 +597,7 @@ const days = [
             </Typography>
             <Divider style={{width:'100%'}}/>
 
-            <Box style={{maxHeight: 500, overflow: 'auto', width: '100%', paddingTop: 280}} display="flex" flexDirection="column" justifyContent="center" alignItems="center">
+            <Box style={{maxHeight: 500, overflow: 'auto', width: '100%', paddingTop: 360}} display="flex" flexDirection="column" justifyContent="center" alignItems="center">
               <Stack spacing={4} mt={5} mb={5} sx={{ width: '80%' }} >
                 <FormControl size="small">
                   <InputLabel id="demo-simple-select-label">Package Type</InputLabel>
@@ -633,6 +665,19 @@ const days = [
                       ))}
                     </Select>
                   </FormControl>
+                  <FormControl size="small">
+                      <InputLabel id="demo-simple-select-label">Tutor</InputLabel>
+                      <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        label="Package Type"
+                        value={packageEditForm.user_id} onChange={e=>{handleEditOnChange('user_id',e.target.value)}}
+                      >
+                         {tutors.map((tutor) => (
+                        <MenuItem value={tutor.user_id}>{tutor.user_fname} {tutor.user_lname}</MenuItem>
+                      ))}
+                      </Select>
+                    </FormControl>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DesktopDatePicker
                         label="Start Date"
@@ -724,6 +769,14 @@ const days = [
                       <TableCell align="left">{package1.pack_days}</TableCell>
                       <TableCell align="left">{moment(package1.pack_stime).format("hh:mm A")}</TableCell>
                       <TableCell align="left">{moment(package1.pack_etime).format("hh:mm A")}</TableCell>
+
+                      <TableCell align="center">
+                        {package1.student_enrolled}
+                      </TableCell>
+
+                      <TableCell align="center">
+                        {package1.user_id}
+                      </TableCell>
 
                       <TableCell align="right">
                           <IconButton size="large" color="inherit" onClick={(event) => handleTest(event, package1)}>

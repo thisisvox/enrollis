@@ -331,7 +331,7 @@ export default function TutorPage() {
               <TextField
                 required id="outlined-required" label="Email" placeholder="Email" size='small' value={edEmail} onChange={e=> setEdEmail(e.target.value)} style={{width:'80%'}}
               />
-              <MuiTelInput defaultCountry='MA' size='small' value={edPhone} onChange={handleEditChange} style={{width:'80%'}}/>
+              <MuiTelInput defaultCountry='MA' size='small' label="Phone Number" value={edPhone} onChange={handleEditChange} style={{width:'80%'}}/>
               <TextField
                     id="outlined-number"
                     label="Worked Hours"
