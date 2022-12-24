@@ -8,11 +8,73 @@ import {
     AppCurrentSubject,
     AppConversionRates,
 } from '../sections/@Dashboard/app';
-
+import { useState, useEffect } from 'react';
 // ----------------------------------------------------------------------
 
 export default function DashboardAppPage() {
     const theme = useTheme();
+
+    const [tutors, setTutors]=useState(0);
+    const getTutors = async () => {
+    try {
+        const response = await fetch ("http://164.92.200.193:5000/api/dashboard/tutor");
+        const jsonData = await response.json();
+        setTutors(jsonData);
+        console.log(tutors)
+    } catch (error) {
+        console.error(error.message);
+    }
+    }
+
+    useEffect(() => {
+        getTutors();
+    }, [])
+
+    const [students, setStudents]=useState(0);
+    const getStudents = async () => {
+    try {
+        const response = await fetch ("http://164.92.200.193:5000/api/dashboard/student");
+        const jsonData = await response.json();
+        setStudents(jsonData);
+    } catch (error) {
+        console.error(error.message);
+    }
+    }
+
+    useEffect(() => {
+        getStudents();
+    }, []);
+
+    const [packages, setPackages]=useState(0);
+    const getPackages = async () => {
+    try {
+        const response = await fetch ("http://164.92.200.193:5000/api/dashboard/package");
+        const jsonData = await response.json();
+        setPackages(jsonData);
+    } catch (error) {
+        console.error(error.message);
+    }
+    }
+
+    useEffect(() => {
+        getPackages();
+    }, []);
+
+    const [sessions, setSessions]=useState(0);
+    const getSessions = async () => {
+    try {
+        const response = await fetch ("http://164.92.200.193:5000/api/dashboard/session");
+        const jsonData = await response.json();
+        setSessions(jsonData);
+    } catch (error) {
+        console.error(error.message);
+    }
+    }
+
+    useEffect(() => {
+        getSessions();
+    }, []);
+
 
     return (
         <>
@@ -27,19 +89,19 @@ export default function DashboardAppPage() {
 
                 <Grid container spacing={3}>
                     <Grid item xs={12} sm={6} md={3}>
-                        <AppWidgetSummary title="Number of tutors" total={3} icon={'ant-design:eye-filled'} />
+                        <AppWidgetSummary title="Number of Tutors" total={tutors} icon={'ant-design:eye-filled'} />
                     </Grid>
 
                     <Grid item xs={12} sm={6} md={3}>
-                        <AppWidgetSummary title="Number of students" total={10} color="info" icon={'ant-design:fire-filled'} />
+                        <AppWidgetSummary title="Number of Students" total={students} color="info" icon={'ant-design:fire-filled'} />
                     </Grid>
 
                     <Grid item xs={12} sm={6} md={3}>
-                        <AppWidgetSummary title="Hours Worked" total={0} color="warning" icon={'ant-design:dashboard-filled'} />
+                        <AppWidgetSummary title="Sessions Offered" total={sessions} color="warning" icon={'ant-design:dashboard-filled'} />
                     </Grid>
 
                     <Grid item xs={12} sm={6} md={3}>
-                        <AppWidgetSummary title="Packages Created" total={0} color="error" icon={'ant-design:file-filled'} />
+                        <AppWidgetSummary title="Packages Available" total={packages} color="error" icon={'ant-design:file-filled'} />
                     </Grid>
 
                     <Grid item xs={12} md={6} lg={8}>
@@ -116,7 +178,7 @@ export default function DashboardAppPage() {
                     <Grid item xs={12} md={6} lg={4}>
                         <AppCurrentSubject
                             title="Subjects Flowchart"
-                            chartLabels={['Reading', 'Mathematics', 'Listening', 'Writing', 'Speaking', 'Physics']}
+                            chartLabels={['Reading', 'Vocabulary', 'Listening', 'Writing', 'Speaking', 'Communication']}
                             chartData={[
                                 { name: 'Series 1', data: [80, 50, 30, 40, 100, 20] },
                                 { name: 'Series 2', data: [20, 30, 40, 80, 20, 80] },
