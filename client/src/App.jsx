@@ -52,8 +52,8 @@ function App() {
           <Nav openNav={open} onCloseNav={() => setOpen(false)} />
           <Main>
             <Routes>
-              <Route path="/" element = {<HomePage/>}/>
-              <Route path="/home" element = {<HomePage/>}/>
+              <Route path="/" element = {<Dashboard />}/>
+              <Route path="/home" element = {<Dashboard />}/>
               <Route path="/tutors" element ={<TutorPage />}/>  
               <Route path="/packages" element ={<PackagePage />}/>
               <Route path="/students" element ={<StudentPage />}/> 

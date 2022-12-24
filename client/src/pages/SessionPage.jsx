@@ -33,6 +33,8 @@ import {
   TablePagination,
   Modal,
   Box,
+  Divider,
+  TextField,
 } from "@mui/material";
 // components
 import Label from "../components/label";
@@ -55,14 +57,18 @@ const TABLE_HEAD = [
   { id: "" },
 ];
 const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
+  position: 'absolute',
+  display: 'flex',
+  alignItems: 'center',
+  flexDirection: 'column',
+  top: '50%',
+  left: '50%',
+  borderRadius: 2,
+  transform: 'translate(-50%, -50%)',
+  width: 450,
+  bgcolor: 'background.paper',
   boxShadow: 24,
-  p: 4,
+  p: 3,
 };
 // ----------------------------------------------------------------------
 
@@ -102,9 +108,7 @@ function applySortFilter(array, comparator, query) {
 
 export default function sessionPage() {
   const location = useLocation();
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const [open, setOpen] = useState(false);
   const navigate = useNavigate();
 
 
@@ -123,6 +127,7 @@ export default function sessionPage() {
       console.error(error.message);
     }
   };
+
   const showHandouts = async (id) => {
     try {
       setOpen(false);
@@ -144,6 +149,43 @@ export default function sessionPage() {
     }
   };
   
+  const [openm, setOpenm] = useState(false);
+  const handleOpen = () => setOpenm(true);
+  const handleClose = () => setOpenm(false);
+
+  const[title, setTitle]=useState("");
+  const[description, setDescription]=useState("");
+  const[date, setDate]=useState(dayjs());
+  const[link, setLink]=useState("");
+  const[duration, setDuration]=useState("");
+
+  
+  const addSession = async e => {
+      e.preventDefault();
+  try {
+      const body = { 
+        pack_id: location.state?.pack_id, 
+        sess_title: title, 
+        sess_description: description, 
+        sess_date: date, 
+        sess_link: link, 
+        duration: duration   };
+      const response = await fetch ("http://164.92.200.193:5000/api/session", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(body)
+      });
+      window.location="/session";
+  } catch (error) {
+      console.error(error.message);
+  }
+  };
+  const handleDateChange = (newValue) => {
+    setDate(newValue);
+  };
+
+  //end add
+
   useEffect(() => {
     getSessions();
   }, []);
@@ -253,27 +295,57 @@ export default function sessionPage() {
           </Typography>
           <Button
             variant="contained"
-            startIcon={<Iconify icon="eva:plus-fill" onClick={handleOpen} />}
+            startIcon={<Iconify icon="eva:plus-fill" /> } onClick={handleOpen}
           >
             New session
           </Button>
         </Stack>
 
-        {/* <Modal
-          open={open}
+        <Modal
+          open={openm}
           onClose={handleClose}
           aria-labelledby="modal-modal-title"
           aria-describedby="modal-modal-description"
         >
-          <Box sx={style}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-              Add Session
+          <Box sx={style} position="absolute">
+            <Typography id="modal-modal-title" variant="h5" component="h2" mb={1}>
+              Add Student
             </Typography>
-            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-              Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-            </Typography>
+            <Divider style={{width:'100%'}}/>
+            <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center">
+              <Stack spacing={4} mt={5} mb={5} sx={{ width: '80%' }} >
+              <TextField
+                required id="outlined-required" label="Title" placeholder="Session Title" size='small' value={title} onChange={e=> setTitle(e.target.value)}/>
+              <TextField
+                required id="outlined-required" label="Description" placeholder="Session Descritpion" size='small' value={description} onChange={e=> setDescription(e.target.value)}
+              />
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DesktopDatePicker
+                label="Date"
+                inputFormat="MM/DD/YYYY"
+                value={date}
+                onChange={handleDateChange}
+                renderInput={(params) => <TextField {...params} />}
+              />
+              </LocalizationProvider>
+
+              <TextField
+                required id="outlined-required" label="Link" placeholder="Link to Meeting" size='small' value={link} onChange={e=> setLink(e.target.value)}/>
+              <TextField
+                id="outlined-number"
+                label="Duration"
+                placeholder="Number of Hours"
+                type="number" size='small'
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                value={duration} onChange={e=>{setDuration(e.target.value)}}
+              />
+            </Stack>
+            </Box>
+            <Button variant="contained" startIcon={<CheckIcon />} onClick={addSession} style={{width:'50%'}}>Save</Button>
           </Box>
-        </Modal> */}
+        </Modal>
 
         <Card>
           <SessionListToolbar
