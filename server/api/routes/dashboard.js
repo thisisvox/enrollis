@@ -6,8 +6,8 @@ const router = Router();
 
   router.get("/tutor", async (req, res) => {
     try {
-      const numberofTutors = await pool.query("SELECT count(*) FROM tutor");
-      res.json(numberofTutors);
+      const numberofTutors = await pool.query("SELECT * FROM tutor");
+      res.json(numberofTutors.rowCount);
     } catch (err) {
       console.error(err.message);
     }
@@ -15,22 +15,30 @@ const router = Router();
 
   router.get("/student", async (req, res) => {
     try {
-      const numberofStudents = await pool.query("SELECT count(*) FROM student");
-      res.json(numberofTutors);
+      const numberofStudents = await pool.query("SELECT * FROM student");
+      res.json(numberofStudents.rowCount);
     } catch (err) {
       console.error(err.message);
     }
   });
 
-  router.get("/", async (req, res) => {
+  router.get("/package", async (req, res) => {
     try {
-      const numberofPackages = await pool.query("SELECT count(*) FROM package");
-      res.json(numberofPackages);
+      const numberofPackages = await pool.query("SELECT * FROM package");
+      res.json(numberofPackages.rowCount);
     } catch (err) {
       console.error(err.message);
     }
   });
 
+  router.get("/session", async (req, res) => {
+    try {
+      const numberofPackages = await pool.query("SELECT * FROM session");
+      res.json(numberofPackages.rowCount);
+    } catch (err) {
+      console.error(err.message);
+    }
+  });
 
   
   module.exports = router;
