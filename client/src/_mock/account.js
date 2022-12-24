@@ -2,8 +2,8 @@
 
 const account = {
   displayName: 'Salma Zahidi',
-  email: 'demo@minimals.cc',
-  photoURL: '/assets/images/avatars/avatar_default.jpg',
+  email: 'Sa.Zahidi@aui.ma',
+  photoURL: '/assets/images/avatars/avatar_1.jpg',
 };
 
 export default account;
