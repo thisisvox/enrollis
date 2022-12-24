@@ -45,8 +45,8 @@ create table enroll(
     pack_id serial, 
     enroll_date date, 
     primary key(user_type, user_id, pack_id), 
-    foreign key (pack_id) references package (pack_id), 
-    foreign key (user_type, user_id) references users(user_type, user_id)
+    foreign key (pack_id) references package (pack_id) on update cascade on delete cascade, 
+    foreign key (user_type, user_id) references users(user_type, user_id) on update cascade on delete cascade
     );
 
 create table session (
@@ -61,8 +61,8 @@ create table session (
     user_type char(1) default 'T',
     -- primary key(sess_id, pack_id), //changed 
     primary key (sess_id),
-    foreign key(pack_id) references package(pack_id), 
-    foreign key (user_id, user_type) references tutor(user_id, user_type)
+    foreign key(pack_id) references package(pack_id) on update cascade on delete cascade, 
+    foreign key (user_id, user_type) references tutor(user_id, user_type) on update cascade on delete cascade
     );
 
 create table handout (
@@ -70,5 +70,5 @@ create table handout (
     doc_title text, 
     doc_link text, 
     sess_id serial, 
-    foreign key(sess_id) references session(sess_id)
+    foreign key(sess_id) references session(sess_id) on update cascade on delete cascade
     );

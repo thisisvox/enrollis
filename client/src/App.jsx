@@ -3,6 +3,7 @@ import Header from "./components/header/Header";
 import Nav from "./components/nav";
 import ScrollToTop from "./components/scroll-to-top";
 import TutorPage from "./pages/TutorPage";
+import HomePage from "./pages/HomePage";
 import PackagePage from "./pages/PackagePage";
 import StudentPage from "./pages/StudentPage";
 import SessionPage from "./pages/SessionPage";
@@ -14,9 +15,6 @@ import { HelmetProvider } from "react-helmet-async";
 // @mui
 import { styled } from "@mui/material/styles";
 import { Route, Routes } from "react-router-dom";
-import {Dashboard} from "@mui/icons-material";
-import DashboardAppPage from "./pages/Dashbord";
-import LoginPage from "./pages/LoginPage.jsx";
 const APP_BAR_MOBILE = 64;
 const APP_BAR_DESKTOP = 92;
 
@@ -52,9 +50,8 @@ function App() {
           <Nav openNav={open} onCloseNav={() => setOpen(false)} />
           <Main>
             <Routes>
-              <Route path="/" element = {<LoginPage/>}/>
-              <Route path="/home" element = {<DashboardAppPage/>}/>
-              <Route path="/@Dashboard/app" element = {<DashboardAppPage/>}/>
+              <Route path="/" element = {<HomePage/>}/>
+              <Route path="/home" element = {<HomePage/>}/>
               <Route path="/tutors" element ={<TutorPage />}/>  
               <Route path="/packages" element ={<PackagePage />}/>
               <Route path="/students" element ={<StudentPage />}/> 

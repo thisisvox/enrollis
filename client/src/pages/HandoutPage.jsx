@@ -3,14 +3,6 @@ import { Helmet } from "react-helmet-async";
 import { filter } from "lodash";
 import { sentenceCase } from "change-case";
 import { useState, useEffect } from "react";
-import CheckIcon from '@mui/icons-material/Check';
-import dayjs from 'dayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
-import { useNavigate } from 'react-router-dom';
 import { useLocation } from "react-router-dom";
 // @mui
 import {
@@ -39,19 +31,12 @@ import Label from "../components/label";
 import Iconify from "../components/iconify";
 import Scrollbar from "../components/scrollbar";
 // sections
-import { SessionListHead, SessionListToolbar } from "../sections/Session";
-// mock
-import moment from "moment-timezone";
-
-// ----------------------------------------------------------------------
+import { HandoutListHead, HandoutListToolbar } from "../sections/Handout";
 
 const TABLE_HEAD = [
   { id: "name", label: "Title", alignRight: false },
-  { id: "company", label: "Description", alignRight: false },
-  { id: "role", label: "Date", alignRight: false },
-  { id: "isVerified", label: "Link", alignRight: false },
-  { id: "sdate", label: "Duration", alignRight: false },
-  { id: "pack", label: "Package Id", alignRight: false },
+  { id: "company", label: "Link", alignRight: false },
+  { id: "role", label: "Session ID", alignRight: false },
   { id: "" },
 ];
 const style = {
@@ -93,59 +78,44 @@ function applySortFilter(array, comparator, query) {
     return filter(
       array,
       (item) =>
-        item.sess_title.toLowerCase().indexOf(query.toLowerCase()) !== -1 ||
-        item.sess_description.toLowerCase().indexOf(query.toLowerCase()) !== -1
+        item.doc_title.toLowerCase().indexOf(query.toLowerCase()) !== -1 ||
+        item.doc_link.toLowerCase().indexOf(query.toLowerCase()) !== -1
     );
   }
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function sessionPage() {
+export default function HandoutPage() {
   const location = useLocation();
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const navigate = useNavigate();
 
-
-  const [sessions, setSessions] = useState([]);
-  const getSessions = async () => {
+  const [handouts, setHandouts] = useState([]);
+  const getHandouts = async () => {
     try {
-      const response = await fetch("http://164.92.200.193:5000/api/session");
+      const response = await fetch("http://164.92.200.193:5000/api/handout");
       let jsonData = await response.json();
-      if (location.state?.pack_id) {
-        jsonData = jsonData.filter((session) => {
-          return session.pack_id === location.state.pack_id;
+      if (location.state?.sess_id) {
+        jsonData = jsonData.filter((handout) => {
+          return handout.sess_id === location.state.sess_id;
         });
       }
-      setSessions(jsonData);
+      setHandouts(jsonData);
     } catch (error) {
       console.error(error.message);
     }
   };
-  const showHandouts = async (id) => {
-    try {
-      setOpen(false);
-      navigate("/handout", { state: { sess_id: id } });
-    } catch (error) {
-      console.error(error.message);
-    }
-  }; 
-  const deleteSession = async (id) => {
-    try {
-      setOpen(false);
-      const response = await fetch(`http://164.92.200.193:5000/api/session/${id}`, {
-        method: "DELETE",
-      });
-      setSessions(sessions.filter(session => session.sess_id !== id));
-      // window.location = "/tutors";
-    } catch (error) {
-      console.error(error.message);
-    }
-  };
-  
+//   const showHandouts = async (id) => {
+//     try {
+//       setOpen(false);
+//       navigate("/handout", { state: { sess_id: id } });
+//     } catch (error) {
+//       console.error(error.message);
+//     }
+//   }; 
   useEffect(() => {
-    getSessions();
+    getHandouts();
   }, []);
 
   const [page, setPage] = useState(0);
@@ -161,7 +131,6 @@ export default function sessionPage() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const [selectedRow, setSelectedRow] = useState({});
-
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -185,7 +154,7 @@ export default function sessionPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = sessions.map((session) => session.sess_title);
+      const newSelecteds = handouts.map((handout) => handout.doc_title);
       setSelected(newSelecteds);
       return;
     }
@@ -225,10 +194,10 @@ export default function sessionPage() {
   };
 
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - sessions.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - handouts.length) : 0;
 
   const filteredUsers = applySortFilter(
-    sessions,
+    handouts,
     getComparator(order, orderBy),
     filterName
   );
@@ -238,7 +207,7 @@ export default function sessionPage() {
   return (
     <>
       <Helmet>
-        <title> Session | Enrollis </title>
+        <title> Handout | Enrollis </title>
       </Helmet>
 
       <Container>
@@ -249,13 +218,13 @@ export default function sessionPage() {
           mb={5}
         >
           <Typography variant="h4" gutterBottom>
-            Sessions
+            Handouts
           </Typography>
           <Button
             variant="contained"
             startIcon={<Iconify icon="eva:plus-fill" onClick={handleOpen} />}
           >
-            New session
+            New Handout
           </Button>
         </Stack>
 
@@ -267,7 +236,7 @@ export default function sessionPage() {
         >
           <Box sx={style}>
             <Typography id="modal-modal-title" variant="h6" component="h2">
-              Add Session
+              Add Handout
             </Typography>
             <Typography id="modal-modal-description" sx={{ mt: 2 }}>
               Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
@@ -276,7 +245,7 @@ export default function sessionPage() {
         </Modal> */}
 
         <Card>
-          <SessionListToolbar
+          <HandoutListToolbar
             numSelected={selected.length}
             filterName={filterName}
             onFilterName={handleFilterByName}
@@ -285,50 +254,45 @@ export default function sessionPage() {
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
-                <SessionListHead
+                <HandoutListHead
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={sessions.length}
+                  rowCount={handouts.length}
                   numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
-                  {filteredUsers.map((session) => (
+                  {filteredUsers.map((handout) => (
                     <TableRow
                       hover
-                      key={session.sess_id}
+                      key={handout.doc_id}
                       tabIndex={-1}
                       role="checkbox"
                     >
                       <TableCell padding="checkbox">
                         <Checkbox
                           onChange={(event) =>
-                            handleClick(event, session.sess_title)
+                            handleClick(event, handout.doc_title)
                           }
                         />
                       </TableCell>
                       <TableCell component="th" scope="row" padding="none">
                         <Typography variant="subtitle2" p={2}>
-                          {session.sess_title}
+                          {handout.doc_title}
                         </Typography>
                       </TableCell>
-                      <TableCell align="left">{session.sess_description}</TableCell>
                       <TableCell align="left">
-                        {moment(session.sess_date).format("MMM D, YYYY")}
+                        {handout.doc_link}
                       </TableCell>
-                     
-
-                      <TableCell align="left">
-                        {session.sess_link}
-                      </TableCell>
-                      <TableCell align="center">{session.duration}</TableCell>
-                      <TableCell align="center">{session.pack_id}</TableCell>
+                      <TableCell align="left">{handout.sess_id}</TableCell>
+                      
+                
                       
 
                       <TableCell align="right">
-                      <IconButton size="large" color="inherit" onClick={(event) => handleTest(event, session)}>
+                      <IconButton size="large" color="inherit" onClick={(event) => handleTest(event, handout)}>
                             <Iconify icon={'eva:more-vertical-fill'} />
                           </IconButton>
                       </TableCell>
@@ -372,7 +336,7 @@ export default function sessionPage() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={sessions.length}
+            count={handouts.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -399,17 +363,17 @@ export default function sessionPage() {
           },
         }}
       >
-        <MenuItem onClick= {() => showHandouts(selectedRow.sess_id)}>  
+        {/* <MenuItem onClick= {() => showHandouts(selectedRow.sess_id)}>  
           <Iconify icon={'eva:eye-outline'} sx={{ mr: 2 }} />
-          View Handouts
-        </MenuItem>
+          View Link
+        </MenuItem> */}
 
         <MenuItem>
           <Iconify icon={"eva:edit-fill"} sx={{ mr: 2 }} />
           Edit
         </MenuItem>
 
-        <MenuItem sx={{ color: "error.main" }} onClick= {() => deleteSession(selectedRow.sess_id)}>
+        <MenuItem sx={{ color: "error.main" }}>
           <Iconify icon={"eva:trash-2-outline"} sx={{ mr: 2 }} />
           Delete
         </MenuItem>

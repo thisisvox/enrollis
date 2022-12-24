@@ -64,7 +64,10 @@ const TABLE_HEAD = [
   { id: "days", label: "Days", alignRight: false },
   { id: "stime", label: "Start Time", alignRight: false },
   { id: "etime", label: "End Time", alignRight: false },
-  { id: "" },
+  { id: "studEnrolled",  label: "Enrolled", alignRight: false },
+  { id: "tutor",  label: "Tutor Id", alignRight: false },
+  { id: "", },
+
 ];
 const style = {
   position: 'absolute',
@@ -118,25 +121,26 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function PackagePage() {
-  const [openm, setOpenm] = useState(false);
-  const handleOpen = () => setOpenm(true);
-  const handleClose = () => setOpenm(false);
   const navigate = useNavigate();
 
-  const [packageForm, setPackageForm]= useState({
-    pack_type: '', test_title: '', pack_price: '', pack_n_session: '', pack_sdate: dayjs(), pack_edate: dayjs(),  pack_days: [], pack_stime: dayjs(), pack_etime: dayjs()
-  });
-  /*
-  const[type, setType]=useState("");
-  const[title, setTitle]=useState("");
-  const[price, setEmail]=useState("");
-  const[sessions, setSessions]=useState("");
-  const[sdate, setSdate]=useState("");
-  const[edate, setEdate]=useState("");
-  const[days, setDays]=useState("");
-  const[sTime, setStime]=useState("");
-  const[eTime, setEtime]=useState("");*/
+  //get tutors
+  const [tutors, setTutors]=useState([]);
+  const getTutors = async () => {
+    try {
+        const response = await fetch ("http://164.92.200.193:5000/api/tutor");
+        const jsonData = await response.json();
+        setTutors(jsonData);
+    } catch (error) {
+        console.error(error.message);
+    }
+    }
 
+  useEffect(() => {
+      getTutors();
+  }, []);
+
+
+  //get packages
   const [packages, setPackages] = useState([]);
   const getPackages = async () => {
     try {
@@ -148,6 +152,144 @@ export default function PackagePage() {
     }
   };
 
+  useEffect(() => {
+    getPackages();
+  }, []);
+
+  //add package
+  const [openm, setOpenm] = useState(false);
+  const handleOpen = () => setOpenm(true);
+  const handleClose = () => setOpenm(false);
+
+  const [packageForm, setPackageForm]= useState({
+    pack_type: '', test_title: '', pack_price: '', pack_n_session: '', pack_sdate: dayjs(), pack_edate: dayjs(),  pack_days: [], pack_stime: dayjs(), pack_etime: dayjs(), user_id: '',
+  });
+
+  const addPackage = async e => {
+      e.preventDefault();
+  try {
+      const body = {pack_type: packageForm.pack_type, 
+          test_title: packageForm.test_title, 
+          pack_price: packageForm.pack_price, 
+          pack_n_session: packageForm.pack_n_session, 
+          pack_sdate: packageForm.pack_sdate, 
+          pack_edate: packageForm.pack_edate, 
+          pack_days: packageForm.pack_days.toString(), 
+          pack_stime: packageForm.pack_stime, 
+          pack_etime: packageForm.pack_etime,
+          user_id: packageForm.user_id,
+        };
+      const response = await fetch ("http://localhost:5000/api/package", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(body)
+      });
+          window.location="/packages";
+      } catch (error) {
+          console.error(error.message);
+      }
+      };
+
+      const handleFormOnChange = (key, value) => {
+        setPackageForm({...packageForm, [key]: value})
+      }
+
+      const handleSdateChange = (newValue) => {
+        handleFormOnChange('pack_sdate', newValue);
+      };
+      
+      const handleEdateChange = (newValue) => {
+        handleFormOnChange('pack_edate', newValue);
+      };
+      
+      const handleStimeChange = (newValue) => {
+        handleFormOnChange('pack_stime', newValue);
+      };
+      
+      const handleEtimeChange = (newValue) => {
+        handleFormOnChange('pack_etime', newValue);
+      };  
+      
+  
+    const handleChange = (event) => {
+      const {
+        target: { value },
+      } = event;
+      handleFormOnChange('pack_days', (typeof value === 'string' ? value.split(',') : value));
+    };
+
+  //end add
+  //edit package
+
+  const [openEdit, setOpenEdit] = useState(false);
+  const handleOpenEdit = () => setOpenEdit(true);
+  const handleCloseEdit = () => setOpenEdit(false);
+  
+  const [packageEditForm, setPackageEditForm]= useState({
+    pack_type: '', test_title: '', pack_price: '', pack_n_session: '', pack_sdate: dayjs(), pack_edate: dayjs(),  pack_days: [], pack_stime: dayjs(), pack_etime: dayjs()
+  });
+
+  const editFunctions = () => {
+    handleOpenEdit();
+    setPackageEditForm({pack_type: selectedRow.pack_type,test_title: selectedRow.test_title, pack_price: selectedRow.pack_price, pack_n_session: selectedRow.pack_n_session, pack_sdate: selectedRow.pack_sdate, pack_edate: selectedRow.pack_edate, pack_days: selectedRow.pack_days.split(','), pack_stime: selectedRow.pack_stime, pack_etime: selectedRow.pack_etime, user_id: selectedRow.user_id})
+  }
+
+  const editPackage = async (e,id) => {
+    e.preventDefault();
+  try {
+    const body = {
+        pack_type: packageEditForm.pack_type, 
+        test_title: packageEditForm.test_title, 
+        pack_price: packageEditForm.pack_price, 
+        pack_n_session: packageEditForm.pack_n_session, 
+        pack_sdate: packageEditForm.pack_sdate, 
+        pack_edate: packageEditForm.pack_edate, 
+        pack_days: packageEditForm.pack_days.toString(), 
+        pack_stime: packageEditForm.pack_stime, 
+        pack_etime: packageEditForm.pack_etime,
+        user_id: packageEditForm.user_id
+      };
+    const response = await fetch (`http://localhost:5000/api/package/${id}`, {
+        method: "PUT",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(body)
+    });
+    window.location="/packages";
+  } catch (error) {
+    console.error(error.message);
+  }
+  };
+
+  const handleEditOnChange = (key, value) => {
+    setPackageEditForm({...packageEditForm, [key]: value})
+  }
+
+  const EditSdateChange = (newValue) => {
+  handleEditOnChange('pack_sdate', newValue);
+  };
+
+  const EditEdateChange = (newValue) => {
+    handleEditOnChange('pack_edate', newValue);
+  };
+
+  const EditStimeChange = (newValue) => {
+    handleEditOnChange('pack_stime', newValue);
+  };
+
+  const EditEtimeChange = (newValue) => {
+    handleEditOnChange('pack_etime', newValue);
+  };
+
+  const handleEditChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    handleEditOnChange('pack_days', (typeof value === 'string' ? value.split(',') : value));
+  };
+
+//end edit
+
+  
   const showSessions = async (id) => {
     try {
       setOpen(false);
@@ -156,30 +298,10 @@ export default function PackagePage() {
       console.error(error.message);
     }
   };
-  const addPackage = async e => {
-    console.log(packageForm.pack_type)
-    e.preventDefault();
-try {
-    const body = {pack_type: packageForm.pack_type, 
-        test_title: packageForm.test_title, 
-        pack_price: packageForm.pack_price, 
-        pack_n_session: packageForm.pack_n_session, 
-        pack_sdate: packageForm.pack_sdate, 
-        pack_edate: packageForm.pack_edate, 
-        pack_days: packageForm.pack_days.toString(), 
-        pack_stime: moment(packageForm.pack_stime).format("h:mm:ss a"), 
-        pack_etime: moment(packageForm.pack_etime).format("h:mm:ss a")};
-    const response = await fetch ("http://164.92.200.193:5000/api/package", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(body)
-    });
-    console.log(packageForm.pack_price)
-    window.location="/packages";
-} catch (error) {
-    console.error(error.message);
-}
-};
+
+  
+
+
 const deletePackage = async (id) => {
   try {
     setOpen(false);
@@ -194,10 +316,6 @@ const deletePackage = async (id) => {
 };
 
 
-
-  useEffect(() => {
-    getPackages();
-  }, []);
   const [open, setOpen] = useState(false); 
 
   const [page, setPage] = useState(0);
@@ -214,6 +332,10 @@ const deletePackage = async (id) => {
 
   const [selectedRow, setSelectedRow] = useState({});
 
+  const closeFunctions = () => {
+    handleCloseEdit();
+    handleCloseMenu();
+  }
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -286,10 +408,9 @@ const deletePackage = async (id) => {
 
   const isNotFound = !filteredUsers.length && !!filterName;
 
-  const handleFormOnChange = (key, value) => {
-    setPackageForm({...packageForm, [key]: value})
-    console.log(packageForm)
-  }
+  
+
+  
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -312,29 +433,6 @@ const days = [
   'U'
 ];
   
-
-const handleSdateChange = (newValue) => {
-  handleFormOnChange('pack_sdate', newValue);
-};
-
-const handleEdateChange = (newValue) => {
-  handleFormOnChange('pack_edate', newValue);
-};
-
-const handleStimeChange = (newValue) => {
-  handleFormOnChange('pack_stime', newValue);
-};
-
-const handleEtimeChange = (newValue) => {
-  handleFormOnChange('pack_etime', newValue);
-};
-
-  const handleChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-    handleFormOnChange('pack_days', (typeof value === 'string' ? value.split(',') : value));
-  };
 
   return (
     <>
@@ -371,7 +469,7 @@ const handleEtimeChange = (newValue) => {
             </Typography>
             <Divider style={{width:'100%'}}/>
 
-            <Box style={{maxHeight: 500, overflow: 'auto', width: '100%', paddingTop: 280}} display="flex" flexDirection="column" justifyContent="center" alignItems="center">
+            <Box style={{maxHeight: 500, overflow: 'auto', width: '100%', paddingTop: 360}} display="flex" flexDirection="column" justifyContent="center" alignItems="center">
               <Stack spacing={4} mt={5} mb={5} sx={{ width: '80%' }} >
                 <FormControl size="small">
                   <InputLabel id="demo-simple-select-label">Package Type</InputLabel>
@@ -439,6 +537,19 @@ const handleEtimeChange = (newValue) => {
                       ))}
                     </Select>
                   </FormControl>
+                  <FormControl size="small">
+                      <InputLabel id="demo-simple-select-label">Tutor</InputLabel>
+                      <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        label="Package Type"
+                        value={packageForm.user_id} onChange={e=>{handleFormOnChange('user_id',e.target.value)}}
+                      >
+                         {tutors.map((tutor) => (
+                        <MenuItem value={tutor.user_id}>{tutor.user_fname} {tutor.user_lname}</MenuItem>
+                      ))}
+                      </Select>
+                    </FormControl>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DesktopDatePicker
                         label="Start Date"
@@ -469,6 +580,134 @@ const handleEtimeChange = (newValue) => {
                     </LocalizationProvider>
                 </Stack>
             <Button variant="contained" startIcon={<CheckIcon />} style={{width:'50%'}} onClick={addPackage}>Save</Button>
+            </Box>
+            
+          </Box>
+        </Modal>
+
+        <Modal
+          open={openEdit}
+          onClose={closeFunctions}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={style} position="absolute" >
+            <Typography id="modal-modal-title" variant="h6" component="h2" mb={1} sx={{position:'sticky'}}>
+              Edit Package
+            </Typography>
+            <Divider style={{width:'100%'}}/>
+
+            <Box style={{maxHeight: 500, overflow: 'auto', width: '100%', paddingTop: 360}} display="flex" flexDirection="column" justifyContent="center" alignItems="center">
+              <Stack spacing={4} mt={5} mb={5} sx={{ width: '80%' }} >
+                <FormControl size="small">
+                  <InputLabel id="demo-simple-select-label">Package Type</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    label="Package Type"
+                    value={packageEditForm.pack_type} onChange={e=>{handleEditOnChange('pack_type',e.target.value)}}
+                  >
+                    <MenuItem value={"Gold"}>Gold</MenuItem>
+                    <MenuItem value={"Silver"}>Silver</MenuItem>
+                    <MenuItem value={"Economic"}>Economic</MenuItem>
+                  </Select>
+                </FormControl>
+                <FormControl size="small">
+                  <InputLabel id="demo-simple-select-label">Test Title</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    label="Test Title" 
+                    value={packageEditForm.test_title} onChange={e=>{handleEditOnChange('test_title',e.target.value)}}
+                  >
+                    <MenuItem value={"IELTS"}>IELTS</MenuItem>
+                    <MenuItem value={"ACT"}>ACT</MenuItem>
+                    <MenuItem value={"SAT"}>SAT</MenuItem>
+                    <MenuItem value={"TOEFL"}>TOEFL</MenuItem>
+                    <MenuItem value={"TOEIC"}>TOEIC</MenuItem>
+                  </Select>
+                </FormControl>
+                <FormControl size='small'>
+                  <InputLabel htmlFor="outlined-adornment-amount">Package Price</InputLabel>
+                  <OutlinedInput
+                    id="outlined-adornment-amount"
+                    startAdornment={<InputAdornment position="start">MAD</InputAdornment>}
+                    label="Package Price"
+                    value={packageEditForm.pack_price} onChange={e=>{handleEditOnChange('pack_price',e.target.value)}}
+                  />
+                  </FormControl>
+                  <TextField
+                    id="outlined-number"
+                    label="Number of Sessions"
+                    type="number" size='small'
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    value={packageEditForm.pack_n_session} onChange={e=>{handleEditOnChange('pack_n_session',e.target.value)}}
+                  />
+                  <FormControl size='small'>
+                    <InputLabel id="demo-multiple-checkbox-label">Days</InputLabel>
+                    <Select
+                      labelId="demo-multiple-checkbox-label"
+                      id="demo-multiple-checkbox"
+                      multiple
+                      value={packageEditForm.pack_days}
+                      onChange={handleEditChange}
+                      input={<OutlinedInput label="Days" />}
+                      renderValue={(selected) => selected.join(', ')}
+                      MenuProps={MenuProps}
+                    >
+                      {days.map((day) => (
+                        <MenuItem key={day} value={day}>
+                          <Checkbox checked={(packageEditForm.pack_days).indexOf(day) > -1} />
+                          <ListItemText primary={day} />
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  <FormControl size="small">
+                      <InputLabel id="demo-simple-select-label">Tutor</InputLabel>
+                      <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        label="Package Type"
+                        value={packageEditForm.user_id} onChange={e=>{handleEditOnChange('user_id',e.target.value)}}
+                      >
+                         {tutors.map((tutor) => (
+                        <MenuItem value={tutor.user_id}>{tutor.user_fname} {tutor.user_lname}</MenuItem>
+                      ))}
+                      </Select>
+                    </FormControl>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DesktopDatePicker
+                        label="Start Date"
+                        inputFormat="MM/DD/YYYY"
+                        value={packageEditForm.pack_sdate}
+                        onChange={EditSdateChange}
+                        renderInput={(params) => <TextField {...params} />}
+                      />
+                      <DesktopDatePicker
+                        label="End Date"
+                        inputFormat="MM/DD/YYYY"
+                        value={packageEditForm.pack_edate}
+                        onChange={EditEdateChange}
+                        renderInput={(params) => <TextField {...params} />}
+                      />
+                      <TimePicker
+                        label="Start Time"
+                        value={packageEditForm.pack_stime}
+                        onChange={EditStimeChange}
+                        renderInput={(params) => <TextField {...params} />}
+                      />
+                      <TimePicker
+                        label="End Time"
+                        value={packageEditForm.pack_etime}
+                        onChange={EditEtimeChange}
+                        renderInput={(params) => <TextField {...params} />}
+                      />
+                    </LocalizationProvider>
+                </Stack>
+            <Button variant="contained" startIcon={<CheckIcon />} style={{width:'50%'}} onClick={(e) => editPackage(e,selectedRow.pack_id)}>Save</Button>
             </Box>
             
           </Box>
@@ -528,8 +767,16 @@ const handleEtimeChange = (newValue) => {
                       </TableCell>
 
                       <TableCell align="left">{package1.pack_days}</TableCell>
-                      <TableCell align="left">{package1.pack_stime}</TableCell>
-                      <TableCell align="left">{package1.pack_etime}</TableCell>
+                      <TableCell align="left">{moment(package1.pack_stime).format("hh:mm A")}</TableCell>
+                      <TableCell align="left">{moment(package1.pack_etime).format("hh:mm A")}</TableCell>
+
+                      <TableCell align="center">
+                        {package1.student_enrolled}
+                      </TableCell>
+
+                      <TableCell align="center">
+                        {package1.user_id}
+                      </TableCell>
 
                       <TableCell align="right">
                           <IconButton size="large" color="inherit" onClick={(event) => handleTest(event, package1)}>
@@ -608,7 +855,7 @@ const handleEtimeChange = (newValue) => {
           View Sessions
         </MenuItem>
 
-        <MenuItem onClick={handleOpen}> 
+        <MenuItem onClick={editFunctions}> 
           <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
           Edit
         </MenuItem>
