@@ -2,13 +2,42 @@ const { Router } = require('express');
 const pool = require("../../db");
 const router = Router();
 
-router.put("/:doc_id", async(req,res)=> {
+
+
+  router.get("/tutor", async (req, res) => {
     try {
-        const {doc_id} = req.params;
-        const {doc_title, doc_description, sess_id, pack_id} = req.body;
-        const updateHandout = await pool.query("UPDATE handout SET (doc_title = $1, doc_link =$2, sess_id =$3, pack_id=$4) WHERE doc_id = $6", [doc_title, doc_description, sess_id, pack_id, sess_id]);
-        res.json("Handout was updated successfully");
+      const numberofTutors = await pool.query("SELECT count(*) FROM tutor");
+      res.json(numberofTutors);
     } catch (err) {
-        console.error(err.message);
+      console.error(err.message);
     }
-})
+  });
+
+  router.get("/student", async (req, res) => {
+    try {
+      const numberofStudents = await pool.query("SELECT count(*) FROM student");
+      res.json(numberofTutors);
+    } catch (err) {
+      console.error(err.message);
+    }
+  });
+
+  router.get("/", async (req, res) => {
+    try {
+      const numberofPackages = await pool.query("SELECT count(*) FROM package");
+      res.json(numberofPackages);
+    } catch (err) {
+      console.error(err.message);
+    }
+  });
+
+
+  
+  module.exports = router;
+
+
+
+
+
+
+  
