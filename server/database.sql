@@ -1,4 +1,5 @@
 CREATE DATABASE enrollis;
+-- Tables Section
 create table users(
     user_type char(1) NOT NULL, 
     user_id serial not null,
@@ -9,6 +10,14 @@ create table users(
     CONSTRAINT pk_user PRIMARY KEY(user_type, user_id), 
     constraint check_type CHECK (user_type in ('S', 'T' , 'A'))
     );
+
+create table admin ( 
+    user_type char(1) DEFAULT 'A', 
+    user_id serial not null, 
+    access_degree varchar,
+    primary key (user_type, user_id)
+    constraint check_degree CHECK (access_degree in ('H', 'L'))
+    )inherits (users);
 
 create table student ( 
     user_type char(1) DEFAULT 'S', 
@@ -35,7 +44,10 @@ create table package (
     pack_days varchar(7), 
     pack_stime text, 
     pack_etime text, 
+    user_id serial,
+    user_type char(1) default 'T',
     primary key(pack_id), 
+    foreign key (user_id, user_type) references tutor(user_id, user_type) on update cascade on delete cascade
     constraint check_time check (pack_edate>pack_sdate)
     );
 
@@ -56,13 +68,9 @@ create table session (
     sess_description text, 
     sess_date date, 
     sess_link text, 
-    duration int, 
-    user_id serial,
-    user_type char(1) default 'T',
-    -- primary key(sess_id, pack_id), //changed 
+    duration int,     
     primary key (sess_id),
-    foreign key(pack_id) references package(pack_id) on update cascade on delete cascade, 
-    foreign key (user_id, user_type) references tutor(user_id, user_type) on update cascade on delete cascade
+    foreign key(pack_id) references package(pack_id) on update cascade on delete cascade,  
     );
 
 create table handout (
@@ -72,3 +80,45 @@ create table handout (
     sess_id serial, 
     foreign key(sess_id) references session(sess_id) on update cascade on delete cascade
     );
+-- End of Tables Section-------------------------
+
+-- Triggers Section
+    create function updateHrs() returns trigger 
+    language plpgsql
+    AS $$ 
+    BEGIN
+    update Tutor set tutor_worked_hrs = tutor_worked_hrs + NEW.duration 
+    where user_id = (SELECT user_id from package where pack_id = new.pack_id);
+    RETURN NEW;
+    END;
+    $$;
+    create trigger trHrs after insert on session
+    for each row execute function updateHrs();
+    --****--
+    create function updateEnrollNum() returns trigger.
+    language plpgsql
+    AS $$ 
+    BEGIN
+    update package set student_enrolled = student_enrolled + 1
+    where pack_id = NEW.pack_id;
+    RETURN NEW;
+    END;
+    $$;
+    create trigger trEnroll after insert on enroll
+    for each row execute function updateEnrollNum();
+-- End of Triggers Section-------------------------
+-- Views Section
+    create view studentCount 
+    select count(*) from student;
+
+    create view tutorCount 
+    select count(*) from tutor;
+
+    create view packageCount 
+    select count(*) from package;
+
+    create view sessionCount 
+    select count(*) from session;
+
+
+
